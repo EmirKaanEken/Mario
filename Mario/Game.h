@@ -16,6 +16,7 @@ class Game {
 	Texture lowerPipeTexture;
 	Sprite upperPipes[2];
 	Texture upperPipeTexture;
+	Sprite* platforms;
 public:
 	Game();
 	//~Game();
