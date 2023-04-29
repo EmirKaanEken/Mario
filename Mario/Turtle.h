@@ -7,7 +7,7 @@ class Turtle : public Object {
 	float vy;
 public:
 	Turtle(RenderWindow* window);
-	//void move();
+	void move();
 	//void jump(bool down);
 	//void fall(void);
 };

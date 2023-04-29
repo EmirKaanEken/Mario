@@ -4,6 +4,7 @@ Game::Game() {
 	this->isLeftPressed = false;
 	this->isRightPressed = false;
 	this->isUpPressed = false;
+	this->timePassed = 0;
 	window = new RenderWindow(VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Mario");
 
 	this->setBackground(*window);
@@ -34,17 +35,20 @@ void Game::update(void) {
 			}
 		}
 
+		spawnTurtle();
 
-		handleMarioMove();
 
+		//handleMarioMove();
+		moveObjects();
 		window->clear();
 
-		mario->draw(*window);
-
+		//mario->draw(*window);
+		drawObjects();
 		drawBackground(*window);
 		window->display();
 
 		sleep(milliseconds(100));
+		timePassed += 0.1;
 	}
 }
 
@@ -112,6 +116,16 @@ Turtle* Game::addTurtle(void)
 	Turtle* turtle = new Turtle(window);
 	turtle->next = objects;
 	objects = turtle;
+	if (rand() % 2)
+	{
+		turtle->setPosition(Vector2f(230, 80));
+		objects->heading = 2;	//right
+	}
+	else {
+		turtle->setPosition(Vector2f(795, 80));
+		objects->sprite.setScale(-1, 1);
+		objects->heading = 1;	//left
+	}
 	return turtle;
 }
 
@@ -166,9 +180,11 @@ bool Game::onFloor(Object* obj)
 		{
 			if (intersectedRect.width > intersectedRect.height)
 			{
+				//mario->setVerticalSpeed(0);
 				for (int i = 0; i < obj->sprite.getGlobalBounds().width; i++) {
-					if (platforms[j].getGlobalBounds().contains(Vector2f(obj->sprite.getGlobalBounds().left + i, obj->sprite.getGlobalBounds().top + obj->sprite.getGlobalBounds().height)))
+					if (platforms[j].getGlobalBounds().contains(Vector2f(obj->sprite.getGlobalBounds().left + i, obj->sprite.getGlobalBounds().top + obj->sprite.getGlobalBounds().height + 15)))
 					{
+						//obj->setPosition(Vector2f(obj->getPosition().x, platforms[j].getGlobalBounds().top - (obj->sprite.getGlobalBounds().height/ 2.0f) + 1));
 						return true;
 					}
 				}
@@ -176,4 +192,67 @@ bool Game::onFloor(Object* obj)
 		}
 	}
 	return false;
+}
+
+bool Game::checkCollusion(Turtle* t, Mario* m, int& side)	//Mario, side 0: soldan, 1: üstten, 2: saðdan, 3: aþaðýdan çarptý turtle'a
+{
+	IntRect turtleRect = t->boundingBox();
+	IntRect marioRect = m->boundingBox();
+	IntRect resRect;
+	if (turtleRect.intersects(marioRect, resRect))
+	{
+		if (resRect.width > resRect.height)
+		{
+			if (turtleRect.top > marioRect.top)
+				side = 3;
+			else
+				side = 1;
+		}
+		else
+		{
+			if (turtleRect.left < marioRect.left)
+				side = 2;
+			else
+				side = 0;
+		}
+		return true;
+	}	
+	return false;
+}
+
+void Game::drawObjects(void)
+{
+	Object* cur = objects;
+	while (cur)
+	{
+		cur->draw(*window);
+		cur = cur->next;
+	}
+}
+
+void Game::spawnTurtle(void)
+{
+	if (1.0 < timePassed && timePassed < 1.2)
+		addTurtle();
+	else if (7.0 < timePassed && timePassed < 7.2)
+		addTurtle();
+	else if (14.0 < timePassed && timePassed < 14.2)
+		addTurtle();
+	else if (17.0 < timePassed && timePassed < 17.2)
+		addTurtle();
+	else if (25.0 < timePassed && timePassed < 25.2)
+		addTurtle();
+}
+
+void Game::moveObjects(void)
+{
+	Object* cur = objects;
+	while (cur)
+	{
+		if (dynamic_cast<Mario*>(cur) != NULL)
+			handleMarioMove();
+		else
+			cur->move();
+		cur = cur->next;
+	}
 }

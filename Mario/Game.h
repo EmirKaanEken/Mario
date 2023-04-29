@@ -11,16 +11,20 @@ class Game {
 	Texture bgTextures[4];
 	Sprite* platforms;
 	bool isUpPressed, isRightPressed, isLeftPressed;
+	float timePassed;
 public:
 	Game();
 	//~Game();
 	void drawBackground(RenderWindow& window);
 	void setBackground(RenderWindow& window);
 	Turtle* addTurtle(void);
+	void spawnTurtle(void);
 	void handleKeyPres(Event&);
 	void handleKeyRelease(Event&);
 	void handleMarioMove(void);
 	bool onFloor(Object* obj);
-	//bool checkCollision(Turtle* t, Mario* m, int& side);
+	bool checkCollusion(Turtle*, Mario*, int&);
+	void drawObjects(void);
+	void moveObjects(void);
 	void update(void);
 };

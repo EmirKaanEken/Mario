@@ -21,5 +21,10 @@ void Object::draw(RenderWindow& window)
 
 Vector2f Object::getPosition()
 {
-	return this->pos;
+	return this->sprite.getPosition();
+}
+
+IntRect Object::boundingBox(void)
+{
+	return static_cast<IntRect>(this->sprite.getGlobalBounds());
 }

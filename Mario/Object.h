@@ -19,9 +19,9 @@ public:
 	Vector2f getPosition();
 	IntRect boundingBox(void);
 	void draw(RenderWindow& window);
-	void move(void);
-	void fall(void);
-	void jump(bool down);
+	virtual void move(void){}
+	virtual void fall(void){}
+	virtual void jump(bool down){}
 };
 
 /*class ObjectList {
