@@ -7,7 +7,12 @@ class Mario : public Object {
 	float vy;
 public:
 	Mario(RenderWindow* window);
-	//void move();
+	enum moveDirection {
+		UP,
+		RIGHT,
+		LEFT
+	};
+	void move(moveDirection);
 	//void jump(bool down);
 	//void fall(void);
 };

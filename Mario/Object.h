@@ -8,9 +8,11 @@ protected:
 	Sprite sprite;
 	RenderWindow* window;
 	int state;
+	int footState;
 	int heading;
-	Object* next, * prev;
-	friend class ObjectList;
+	Object* next;
+	friend class Game;
+	//friend class ObjectList;
 public:
 	Object(RenderWindow* window);
 	void setPosition(Vector2f);
@@ -22,8 +24,8 @@ public:
 	void jump(bool down);
 };
 
-class ObjectList {
+/*class ObjectList {
 	Object* head, * tail;
 public:
 	ObjectList();
-};
+};*/

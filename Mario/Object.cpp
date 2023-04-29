@@ -6,7 +6,6 @@ Object::Object(RenderWindow* window)
 	this->state = 0;
 	this->heading = 0;
 	this->next = NULL;
-	this->prev = NULL;
 }
 
 void Object::setPosition(Vector2f pos)
