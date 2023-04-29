@@ -13,6 +13,8 @@ public:
 		LEFT
 	};
 	void move(moveDirection);
-	//void jump(bool down);
+	void jump(bool, bool);
 	//void fall(void);
+	void setVerticalSpeed(float s) { this->vy = s; }
+	float getVerticalSpeed(void) { return this->vy; }
 };

@@ -17,7 +17,7 @@ Mario::Mario(RenderWindow* window) : Object(window) {
 	this->state = 0;
 	this->footState = 0;
 	this->vx = 12;
-	this->vy = 12;
+	this->vy = 0;
 }
 
 void Mario::move(moveDirection dir)
@@ -136,4 +136,18 @@ void Mario::move(moveDirection dir)
 		break;
 	}
 	sprite.setTexture(textures[state]);
+}
+
+void Mario::jump(bool down, bool up)
+{
+	if (down)
+	{
+		vy = 0;
+		if (up)
+			vy = -20;
+	}
+	else {
+		vy += 9.98 * 0.1;
+	}
+	sprite.move(Vector2f(0, vy));
 }

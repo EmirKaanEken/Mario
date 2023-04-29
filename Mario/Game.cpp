@@ -1,6 +1,9 @@
 #include "Game.h"
 
 Game::Game() {
+	this->isLeftPressed = false;
+	this->isRightPressed = false;
+	this->isUpPressed = false;
 	window = new RenderWindow(VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Mario");
 
 	this->setBackground(*window);
@@ -18,21 +21,21 @@ void Game::update(void) {
 
 		while (window->pollEvent(event))
 		{
+			Vector2f prePos = mario->getPosition();
 			if (event.type == Event::Closed)
 				window->close();
 			else if (event.type == Event::KeyPressed)
 			{
-				Vector2f prePos = mario->getPosition();
-				if (event.key.code == Keyboard::Right)
-					mario->move(Mario::moveDirection::RIGHT);
-				else if (event.key.code == Keyboard::Left)
-					mario->move(Mario::moveDirection::LEFT);
-				else if (event.key.code == Keyboard::Up)
-					mario->move(Mario::moveDirection::UP);
-				else if (event.key.code == Keyboard::Left && event.key.code == Keyboard::Up)
-					mario->setPosition(Vector2f(400, 400));
+				handleKeyPres(event);
+			}
+			else if (event.type == Event::KeyReleased)
+			{
+				handleKeyRelease(event);
 			}
 		}
+
+
+		handleMarioMove();
 
 		window->clear();
 
@@ -110,4 +113,67 @@ Turtle* Game::addTurtle(void)
 	turtle->next = objects;
 	objects = turtle;
 	return turtle;
+}
+
+void Game::handleKeyPres(Event& e)
+{
+	if (e.key.code == Keyboard::Right)
+		isRightPressed = true;
+	else if (e.key.code == Keyboard::Left)
+		isLeftPressed = true;
+	else if (e.key.code == Keyboard::Up)
+		isUpPressed = true;
+}
+void Game::handleKeyRelease(Event& e)
+{
+	if (e.key.code == Keyboard::Right)
+		isRightPressed = false;
+	else if (e.key.code == Keyboard::Left)
+		isLeftPressed = false;
+	else if (e.key.code == Keyboard::Up)
+		isUpPressed = false;
+}
+
+void Game::handleMarioMove(void)
+{
+	if (isLeftPressed && isRightPressed)
+	{
+		//Do nothing, Perhaps we allow it to jump if it is pressed three key simultaneously
+	}
+	/*else if (isLeftPressed && isUpPressed)
+		mario->setPosition(Vector2f(100, 100));	//will handle upper left
+	else if (isRightPressed && isUpPressed)
+		mario->setPosition(Vector2f(500, 500));	//will handle upper right*/
+	else if (isLeftPressed)
+		mario->move(Mario::moveDirection::LEFT);
+	else if(isRightPressed)
+		mario->move(Mario::moveDirection::RIGHT);
+	else if(isUpPressed)
+		mario->move(Mario::moveDirection::UP);
+
+	mario->jump(onFloor(mario), isUpPressed);
+}
+
+bool Game::onFloor(Object* obj)
+{
+	/*Burada þu an width falan karþýlaþtýrarak, aslýnda platformla çakýþtýðý taraflarý ayýrmaya baþladým. Genel bi checkHit fonksiyonuna bunlarýn çoðunu
+	geçirip, burada sadece ilgili fonksiyonu çaðýrýp onun geri dönüþüne göre true false dönerim mesela, o fonksiyonun diðer çýktýlarý için de baþka 
+	fonksiyonlarda iþ yaparým*/
+	FloatRect intersectedRect;
+	for (int j = 0; j < 81; j++)
+	{
+		if (platforms[j].getGlobalBounds().intersects(obj->sprite.getGlobalBounds(), intersectedRect))
+		{
+			if (intersectedRect.width > intersectedRect.height)
+			{
+				for (int i = 0; i < obj->sprite.getGlobalBounds().width; i++) {
+					if (platforms[j].getGlobalBounds().contains(Vector2f(obj->sprite.getGlobalBounds().left + i, obj->sprite.getGlobalBounds().top + obj->sprite.getGlobalBounds().height)))
+					{
+						return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
 }
