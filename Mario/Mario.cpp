@@ -147,7 +147,7 @@ void Mario::jump(bool down, bool up)
 			vy = -20;
 	}
 	else {
-		vy += 9.98 * 0.1;
+		vy += 11 * 0.1;
 	}
 	sprite.move(Vector2f(0, vy));
 }

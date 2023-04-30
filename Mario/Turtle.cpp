@@ -32,7 +32,7 @@ void Turtle::jump(bool down)
 		vy = 0;
 	}
 	else {
-		vy += 9.98 * 0.1;
+		vy += 11 * 0.1;
 	}
 	sprite.move(Vector2f(0, vy));
 }

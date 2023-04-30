@@ -194,13 +194,10 @@ bool Game::onFloor(Object* obj)
 		{
 			if (intersectedRect.width > intersectedRect.height)
 			{
-				//mario->setVerticalSpeed(0);
-				for (int i = 0; i < obj->sprite.getGlobalBounds().width; i++) {
-					if (platforms[j].getGlobalBounds().contains(Vector2f(obj->sprite.getGlobalBounds().left + i, obj->sprite.getGlobalBounds().top + obj->sprite.getGlobalBounds().height + 12)))//buraya +12 yazmamýn belirli bi sebebi yok, platformun içine çok girmesinler diye + deðer veriyorum ve kaplumbaðalar 12'den büyük deðerler için en alttaki platformun içinden geçiyo nedense
-					{
-						//obj->setPosition(Vector2f(obj->getPosition().x, platforms[j].getGlobalBounds().top - (obj->sprite.getGlobalBounds().height/ 2.0f) + 1)); //biraz içeri girseler de en tepeye çýksýn diye koydum ama iþlem hýzýný yavaþlattýðý için bazen platform içinden geçilmesine sebep luyo
+				if(platforms[j].getGlobalBounds().top > obj->sprite.getGlobalBounds().top)
+				{
+						obj->setPosition(Vector2f(obj->getPosition().x, platforms[j].getGlobalBounds().top - (obj->sprite.getGlobalBounds().height/ 2.0f) + 1)); //biraz içeri girseler de en tepeye çýksýn diye koydum ama iþlem hýzýný yavaþlattýðý için bazen platform içinden geçilmesine sebep luyo
 						return true;
-					}
 				}
 			}
 		}
