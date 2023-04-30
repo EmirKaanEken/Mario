@@ -24,3 +24,15 @@ void Turtle::move()
 		vx = 12;
 	this->sprite.move(vx, vy);
 }
+
+void Turtle::jump(bool down)
+{
+	if (down)
+	{
+		vy = 0;
+	}
+	else {
+		vy += 9.98 * 0.1;
+	}
+	sprite.move(Vector2f(0, vy));
+}

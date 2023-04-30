@@ -18,10 +18,12 @@ public:
 	void drawBackground(RenderWindow& window);
 	void setBackground(RenderWindow& window);
 	Turtle* addTurtle(void);
+	Mario* addMario(void);
 	void spawnTurtle(void);
 	void handleKeyPres(Event&);
 	void handleKeyRelease(Event&);
 	void handleMarioMove(void);
+	void handleTurtleMove(Object*);
 	bool onFloor(Object* obj);
 	bool checkCollusion(Turtle*, Mario*, int&);
 	void drawObjects(void);

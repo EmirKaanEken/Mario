@@ -9,7 +9,7 @@ Game::Game() {
 
 	this->setBackground(*window);
 
-	mario = new Mario(window);
+	mario = addMario();
 	mario->setPosition(Vector2f(512, 756));
 
 
@@ -111,6 +111,14 @@ void Game::drawBackground(RenderWindow& window)
 	}	
 }
 
+Mario* Game::addMario(void)
+{
+	Mario* mario = new Mario(window);
+	mario->next = objects;
+	objects = mario;
+	return mario;
+}
+
 Turtle* Game::addTurtle(void)
 {
 	Turtle* turtle = new Turtle(window);
@@ -168,6 +176,12 @@ void Game::handleMarioMove(void)
 	mario->jump(onFloor(mario), isUpPressed);
 }
 
+void Game::handleTurtleMove(Object* obj)
+{
+	obj->move();
+	obj->jump(onFloor(obj));
+}
+
 bool Game::onFloor(Object* obj)
 {
 	/*Burada þu an width falan karþýlaþtýrarak, aslýnda platformla çakýþtýðý taraflarý ayýrmaya baþladým. Genel bi checkHit fonksiyonuna bunlarýn çoðunu
@@ -182,9 +196,9 @@ bool Game::onFloor(Object* obj)
 			{
 				//mario->setVerticalSpeed(0);
 				for (int i = 0; i < obj->sprite.getGlobalBounds().width; i++) {
-					if (platforms[j].getGlobalBounds().contains(Vector2f(obj->sprite.getGlobalBounds().left + i, obj->sprite.getGlobalBounds().top + obj->sprite.getGlobalBounds().height + 15)))
+					if (platforms[j].getGlobalBounds().contains(Vector2f(obj->sprite.getGlobalBounds().left + i, obj->sprite.getGlobalBounds().top + obj->sprite.getGlobalBounds().height + 12)))//buraya +12 yazmamýn belirli bi sebebi yok, platformun içine çok girmesinler diye + deðer veriyorum ve kaplumbaðalar 12'den büyük deðerler için en alttaki platformun içinden geçiyo nedense
 					{
-						//obj->setPosition(Vector2f(obj->getPosition().x, platforms[j].getGlobalBounds().top - (obj->sprite.getGlobalBounds().height/ 2.0f) + 1));
+						//obj->setPosition(Vector2f(obj->getPosition().x, platforms[j].getGlobalBounds().top - (obj->sprite.getGlobalBounds().height/ 2.0f) + 1)); //biraz içeri girseler de en tepeye çýksýn diye koydum ama iþlem hýzýný yavaþlattýðý için bazen platform içinden geçilmesine sebep luyo
 						return true;
 					}
 				}
@@ -232,15 +246,15 @@ void Game::drawObjects(void)
 
 void Game::spawnTurtle(void)
 {
-	if (1.0 < timePassed && timePassed < 1.2)
+	if (1.05 < timePassed && timePassed < 1.15)
 		addTurtle();
-	else if (7.0 < timePassed && timePassed < 7.2)
+	else if (7.05 < timePassed && timePassed < 7.15)
 		addTurtle();
-	else if (14.0 < timePassed && timePassed < 14.2)
+	else if (14.05 < timePassed && timePassed < 14.15)
 		addTurtle();
-	else if (17.0 < timePassed && timePassed < 17.2)
+	else if (17.05 < timePassed && timePassed < 17.15)
 		addTurtle();
-	else if (25.0 < timePassed && timePassed < 25.2)
+	else if (25.05 < timePassed && timePassed < 25.15)
 		addTurtle();
 }
 
@@ -252,7 +266,7 @@ void Game::moveObjects(void)
 		if (dynamic_cast<Mario*>(cur) != NULL)
 			handleMarioMove();
 		else
-			cur->move();
+			handleTurtleMove(cur);
 		cur = cur->next;
 	}
 }
