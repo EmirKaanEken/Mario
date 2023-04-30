@@ -74,6 +74,7 @@ void Turtle::move()
 	case 4:
 			state = 4;
 			this->vx = 0;
+			this->canKill = false;
 		break;
 	default:
 		break;

@@ -12,7 +12,6 @@ Mario::Mario(RenderWindow* window) : Object(window) {
 	this->textures[7].loadFromFile("../assets/mariohead.png");
 	this->sprite.setTexture(this->textures[0]);
 	this->sprite.setOrigin(Vector2f(this->sprite.getTextureRect().width / 2.0f, this->sprite.getTextureRect().height / 2.0f));
-	//this->sprite.setScale(-1, 1);
 
 	this->state = 0;
 	this->footState = 0;
@@ -208,9 +207,15 @@ void Mario::move(moveDirection dir, bool isOnFloor)
 		break;
 	case 6:
 		if (this->getIsDead())
+		{
 			state = 6;
+			this->canKill = false;
+		}
 		else
+		{
 			state = 0;
+			this->canKill = true;
+		}
 		break;
 	case 7:
 

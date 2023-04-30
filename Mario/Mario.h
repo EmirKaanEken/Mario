@@ -19,4 +19,5 @@ public:
 	//void fall(void);
 	void setVerticalSpeed(float s) { this->vy = s; }
 	float getVerticalSpeed(void) { return this->vy; }
+	Texture getLiveTexture(void) { return this->textures[7]; }
 };

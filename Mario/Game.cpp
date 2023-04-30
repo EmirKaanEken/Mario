@@ -12,7 +12,7 @@ Game::Game() {
 	mario = addMario();
 	mario->setPosition(Vector2f(512, 756));
 
-
+	scoreBoard = new ScoreBoard(mario->getLiveTexture());
 }
 
 void Game::update(void) {
@@ -47,6 +47,7 @@ void Game::update(void) {
 
 		drawObjects();
 		drawBackground(*window);
+		scoreBoard->drawScoreBoard(*window);
 		window->display();
 
 		sleep(milliseconds(100));
@@ -275,16 +276,15 @@ void Game::handleCollusion(void)
 			if (checkCollusion(static_cast<Turtle*>(cur), mario, side))
 			{
 				//cout << "Çarpýþtý, side: " << side << endl;
-				if (side == 0 || 2 == side)
+				if ((0 == side || 2 == side) && cur->canKill)
 				{
-					//		handleMarioDie();
-					mario->setAsDead();
+					handleMarioDie();
 				}
-				else
+				else if((1 == side || 3 == side) && mario->canKill)
 				{
-					//	handleTurtleDie(cur);
-					cur->setAsDead();
-					mario->setVerticalSpeed(-12);
+					handleTurtleDie(cur);
+					if(3 == side)
+						mario->setVerticalSpeed(-12);
 				}
 			}
 		}
@@ -327,4 +327,26 @@ void Game::moveObjects(void)
 			handleTurtleMove(cur);
 		cur = cur->next;
 	}
+}
+
+void Game::handleMarioDie(void)
+{
+	if (!mario->getIsDead())
+	{
+		scoreBoard->setLives(scoreBoard->getLives() - 1);
+		if (scoreBoard->getLives() == 0)
+			isGameOver = true;
+	}
+	mario->setAsDead();
+}
+
+void Game::handleTurtleDie(Object* obj)
+{
+	if (!obj->getIsDead())
+	{
+		int score = stoi(scoreBoard->getScore());
+		score += 100;
+		scoreBoard->setScore(score);
+	}
+	obj->setAsDead();
 }

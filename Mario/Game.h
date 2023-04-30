@@ -3,6 +3,7 @@
 #include "Object.h"
 #include "Mario.h"
 #include "Turtle.h"
+#include "ScoreBoard.h"
 
 class Game {
 	Mario* mario;		//þimdilik mario ve turtle ayrý ama, bu ikisi obje listesinde bir arada duracak ve oradan ulaþýcaz.
@@ -15,10 +16,14 @@ class Game {
 public:
 	Game();
 	//~Game();
+	ScoreBoard *scoreBoard;
+	bool isGameOver;
 	void drawBackground(RenderWindow& window);
 	void setBackground(RenderWindow& window);
 	Turtle* addTurtle(void);
 	Mario* addMario(void);
+	void handleMarioDie(void);
+	void handleTurtleDie(Object*);
 	void spawnTurtle(void);
 	void handleKeyPres(Event&);
 	void handleKeyRelease(Event&);

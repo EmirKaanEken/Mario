@@ -13,7 +13,7 @@ protected:
 	bool isdead;
 	Object* next;
 	friend class Game;
-	//friend class ObjectList;
+	bool canKill;
 public:
 	Object(RenderWindow* window);
 	void setPosition(Vector2f);
@@ -27,9 +27,3 @@ public:
 	virtual void fall(void){}
 	virtual void jump(bool down){}
 };
-
-/*class ObjectList {
-	Object* head, * tail;
-public:
-	ObjectList();
-};*/
