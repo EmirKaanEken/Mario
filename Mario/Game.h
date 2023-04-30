@@ -26,6 +26,7 @@ public:
 	void handleTurtleMove(Object*);
 	bool onFloor(Object* obj);
 	bool checkCollusion(Turtle*, Mario*, int&);
+	void handleCollusion(void);
 	void drawObjects(void);
 	void moveObjects(void);
 	void update(void);

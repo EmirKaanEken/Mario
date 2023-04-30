@@ -10,9 +10,10 @@ public:
 	enum moveDirection {
 		UP,
 		RIGHT,
-		LEFT
+		LEFT,
+		STAND
 	};
-	void move(moveDirection);
+	void move(moveDirection, bool);
 	void jump(bool, bool);
 	//void fall(void);
 	void setVerticalSpeed(float s) { this->vy = s; }

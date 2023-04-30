@@ -37,6 +37,8 @@ void Game::update(void) {
 
 		spawnTurtle();
 
+		handleCollusion();
+
 
 		//handleMarioMove();
 		moveObjects();
@@ -158,6 +160,7 @@ void Game::handleKeyRelease(Event& e)
 
 void Game::handleMarioMove(void)
 {
+	bool isOnFloor = onFloor(mario);
 	if (isLeftPressed && isRightPressed)
 	{
 		//Do nothing, Perhaps we allow it to jump if it is pressed three key simultaneously
@@ -167,11 +170,15 @@ void Game::handleMarioMove(void)
 	else if (isRightPressed && isUpPressed)
 		mario->setPosition(Vector2f(500, 500));	//will handle upper right*/
 	else if (isLeftPressed)
-		mario->move(Mario::moveDirection::LEFT);
+		mario->move(Mario::moveDirection::LEFT, isOnFloor);
 	else if(isRightPressed)
-		mario->move(Mario::moveDirection::RIGHT);
+		mario->move(Mario::moveDirection::RIGHT, isOnFloor);
 	else if(isUpPressed)
-		mario->move(Mario::moveDirection::UP);
+		mario->move(Mario::moveDirection::UP, isOnFloor);
+	else	// no key is pressed
+	{
+		mario->move(Mario::moveDirection::STAND, isOnFloor);
+	}
 
 	mario->jump(onFloor(mario), isUpPressed);
 }
@@ -205,7 +212,7 @@ bool Game::onFloor(Object* obj)
 	return false;
 }
 
-bool Game::checkCollusion(Turtle* t, Mario* m, int& side)	//Mario, side 0: soldan, 1: üstten, 2: saðdan, 3: aþaðýdan çarptý turtle'a
+bool Game::checkCollusion(Turtle* t, Mario* m, int& side)	//Mario, side 0: soldan, 1: aþaðýdan, 2: saðdan, 3: üstten çarptý turtle'a
 {
 	IntRect turtleRect = t->boundingBox();
 	IntRect marioRect = m->boundingBox();
@@ -229,6 +236,27 @@ bool Game::checkCollusion(Turtle* t, Mario* m, int& side)	//Mario, side 0: solda
 		return true;
 	}	
 	return false;
+}
+
+void Game::handleCollusion(void)
+{
+	Object* cur = objects;
+	int side;
+	while (cur)
+	{
+		if (dynamic_cast<Mario*>(cur) == NULL)
+		{
+			if (checkCollusion(static_cast<Turtle*>(cur), mario, side))
+			{
+				//cout << "Çarpýþtý, side: " << side << endl;
+				/*if (side == 0 || 2 == side)
+					handleMarioDie();
+				else
+					handleTurtleDie(cur);
+			*/}
+		}
+		cur = cur->next;
+	}
 }
 
 void Game::drawObjects(void)
