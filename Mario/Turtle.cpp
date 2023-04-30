@@ -19,9 +19,34 @@ Turtle::Turtle(RenderWindow* window) : Object(window) {
 void Turtle::move()
 {
 	if (1 == this->heading)
-		vx = -12;
+	{
+		if (this->boundingBox().left <= 0) {
+			this->heading = 2;
+			vx = 12;
+			this->sprite.setScale(1, 1);
+		}
+		else if (this->boundingBox().top >= 725 && this->boundingBox().left <= 160)
+		{
+			this->sprite.setPosition(800, 80);
+		}
+		else
+			vx = -12;
+	}
 	else
-		vx = 12;
+	{
+		if (this->boundingBox().left + this->boundingBox().width >= WINDOW_WIDTH)
+		{
+			this->heading = 1;
+			vx = -12;
+			this->sprite.setScale(-1, 1);
+		}
+		else if (this->boundingBox().top >= 725 && this->boundingBox().left >= (WINDOW_WIDTH - 160))
+		{
+			this->sprite.setPosition(200, 80);
+		}
+		else
+			vx = 12;
+	}
 	this->sprite.move(vx, vy);
 }
 
