@@ -6,20 +6,24 @@
 #include "ScoreBoard.h"
 
 class Game {
-	Mario* mario;		//þimdilik mario ve turtle ayrý ama, bu ikisi obje listesinde bir arada duracak ve oradan ulaþýcaz.
+	Mario* mario;
 	Object* objects;
 	RenderWindow* window;
 	Texture bgTextures[4];
 	Sprite* platforms;
+	Font font;
+	Text text[2];
 	bool isUpPressed, isRightPressed, isLeftPressed;
 	float timePassed;
 public:
 	Game();
 	//~Game();
 	ScoreBoard *scoreBoard;
-	bool isGameOver;
+	int gameState;		//0: ana ekran		1: oyunda		2: win			3: lose
 	void drawBackground(RenderWindow& window);
-	void setBackground(RenderWindow& window);
+	void setBackground();
+	void setMainScreen();
+	void drawMainScreen(RenderWindow& window);
 	Turtle* addTurtle(void);
 	Mario* addMario(void);
 	void handleMarioDie(void);

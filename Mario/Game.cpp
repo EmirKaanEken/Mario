@@ -7,12 +7,25 @@ Game::Game() {
 	this->timePassed = 0;
 	window = new RenderWindow(VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Mario");
 
-	this->setBackground(*window);
+	this->setBackground();
 
 	mario = addMario();
 	mario->setPosition(Vector2f(512, 756));
 
 	scoreBoard = new ScoreBoard(mario->getLiveTexture());
+
+	font.loadFromFile("../assets/font.ttf");
+	for (int i = 0; i < 2; i++)
+	{
+		text[i].setFont(font);
+		text[i].setFillColor(Color::Magenta);
+	}
+	
+	text[0].setCharacterSize(120);
+	//text[0].setPosition(Vector2f(300, 200));
+	//text[1].setPosition(Vector2f(300, 400));
+
+	gameState = 0;
 }
 
 void Game::update(void) {
@@ -20,42 +33,120 @@ void Game::update(void) {
 	{
 		Event event;
 
-		while (window->pollEvent(event))
-		{
-			Vector2f prePos = mario->getPosition();
-			if (event.type == Event::Closed)
-				window->close();
-			else if (event.type == Event::KeyPressed)
-			{
-				handleKeyPres(event);
-			}
-			else if (event.type == Event::KeyReleased)
-			{
-				handleKeyRelease(event);
-			}
-		}
-
-		spawnTurtle();
-
-		handleCollusion();
-
-
-		moveObjects();
-
-
 		window->clear();
 
-		drawObjects();
-		drawBackground(*window);
-		scoreBoard->drawScoreBoard(*window);
-		window->display();
+		if (0 == gameState)
+		{
+			scoreBoard->setLives(3);
+			scoreBoard->setScore(0);
+			//Burada tüm objeler silinecek ve mario ortaya yeniden konumlandýrýlacak
+			timePassed = 0;
 
+			text[0].setString("MARIO");
+			text[1].setString("Press \"Space\" to Start");
+			for (int i = 0; i < 2; i++)
+			{
+				text[i].setPosition(Vector2f((WINDOW_WIDTH - text[i].getGlobalBounds().width) / 2.0f, 200 + (i * 150)));
+			}
+
+			while (window->pollEvent(event))
+			{
+				if (event.type == Event::Closed)
+					window->close();
+				else if (event.type == Event::KeyPressed)
+				{
+					if (Keyboard::Space == event.key.code)
+						gameState = 1;
+				}
+			}
+			window->draw(text[0]);
+			window->draw(text[1]);
+		}
+		else if (1 == gameState)
+		{
+			while (window->pollEvent(event))
+			{
+				Vector2f prePos = mario->getPosition();
+				if (event.type == Event::Closed)
+					window->close();
+				else if (event.type == Event::KeyPressed)
+				{
+					handleKeyPres(event);
+				}
+				else if (event.type == Event::KeyReleased)
+				{
+					handleKeyRelease(event);
+				}
+			}
+
+			spawnTurtle();
+
+			handleCollusion();
+
+
+			moveObjects();
+
+
+			//window->clear();
+
+			drawObjects();
+			drawBackground(*window);
+			scoreBoard->drawScoreBoard(*window);
+			timePassed += 0.1;
+		}
+		else if (2 == gameState)
+		{
+			text[0].setString("YOU WIN");
+			text[1].setString("Press \"Space\" to Back Main Screen");
+			for (int i = 0; i < 2; i++)
+			{
+				text[i].setPosition(Vector2f((WINDOW_WIDTH - text[i].getGlobalBounds().width) / 2.0f, 200 + (i * 150)));
+			}
+
+			while (window->pollEvent(event))
+			{
+				if (event.type == Event::Closed)
+					window->close();
+				else if (event.type == Event::KeyPressed)
+				{
+					if (Keyboard::Space == event.key.code)
+						gameState = 0;
+				}
+			}
+			window->draw(text[0]);
+			window->draw(text[1]);
+		}
+		else
+		{
+			text[0].setString("YOU LOSE");
+			text[1].setString("Press \"Space\" to Back Main Screen");
+			for (int i = 0; i < 2; i++)
+			{
+				text[i].setPosition(Vector2f((WINDOW_WIDTH - text[i].getGlobalBounds().width) / 2.0f, 200 + (i * 150)));
+			}
+
+			while (window->pollEvent(event))
+			{
+				if (event.type == Event::Closed)
+					window->close();
+				else if (event.type == Event::KeyPressed)
+				{
+					if (Keyboard::Space == event.key.code)
+						gameState = 0;
+				}
+			}
+			window->draw(text[0]);
+			window->draw(text[1]);
+		}
+
+		
+		window->display();
 		sleep(milliseconds(100));
-		timePassed += 0.1;
+		
 	}
 }
 
-void Game::setBackground(RenderWindow& window)
+void Game::setBackground()
 {
 	this->bgTextures[0].loadFromFile("../assets/floor.png");
 	this->bgTextures[1].loadFromFile("../assets/brick.png");
@@ -335,7 +426,7 @@ void Game::handleMarioDie(void)
 	{
 		scoreBoard->setLives(scoreBoard->getLives() - 1);
 		if (scoreBoard->getLives() == 0)
-			isGameOver = true;
+			gameState = 3;
 	}
 	mario->setAsDead();
 }
@@ -346,6 +437,8 @@ void Game::handleTurtleDie(Object* obj)
 	{
 		int score = stoi(scoreBoard->getScore());
 		score += 100;
+		if (500 == score)
+			gameState = 2;
 		scoreBoard->setScore(score);
 	}
 	obj->setAsDead();
