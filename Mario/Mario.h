@@ -11,7 +11,8 @@ public:
 		UP,
 		RIGHT,
 		LEFT,
-		STAND
+		STAND,
+		DEAD
 	};
 	void move(moveDirection, bool);
 	void jump(bool, bool);

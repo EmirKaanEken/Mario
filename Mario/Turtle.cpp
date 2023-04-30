@@ -52,16 +52,28 @@ void Turtle::move()
 	case 0:
 		footState = false;
 		state = 1;
+		if (this->getIsDead())
+			state = 4;
 		break;
 	case 1:
 		if (footState)
 			state = 0;
 		else
 			state = 2;
+		if (this->getIsDead())
+			state = 4;
 		break;
 	case 2:
 		footState = true;
 		state = 1;
+		if (this->getIsDead())
+			state = 4;
+		break;
+	case 3:
+		break;
+	case 4:
+			state = 4;
+			this->vx = 0;
 		break;
 	default:
 		break;

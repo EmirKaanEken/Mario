@@ -22,6 +22,7 @@ public:
 	void draw(RenderWindow& window);
 	void setAsDead(void) { this->isdead = true; }
 	void setAsLive(void) { this->isdead = false; }
+	bool getIsDead(void) { return this->isdead; }
 	virtual void move(void){}
 	virtual void fall(void){}
 	virtual void jump(bool down){}

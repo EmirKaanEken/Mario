@@ -25,154 +25,192 @@ void Mario::move(moveDirection dir, bool isOnFloor)
 	switch (this->state)
 	{
 	case 0:
-		if (LEFT == dir)
+		if (DEAD == dir)
 		{
-			if (heading == 2)
-			{
-				this->sprite.setScale(1, 1);
-				this->heading = 1;
-			}
-			sprite.move(Vector2f(-vx, 0));
-			state = 1;
+			state = 6;
 		}
-		else if (RIGHT == dir)
+		else
 		{
-			if (heading == 0 || heading == 1)
+			if (LEFT == dir)
 			{
-				this->sprite.setScale(-1, 1);
-				this->heading = 2;
+				if (heading == 2)
+				{
+					this->sprite.setScale(1, 1);
+					this->heading = 1;
+				}
+				sprite.move(Vector2f(-vx, 0));
+				state = 1;
 			}
-			sprite.move(Vector2f(vx, 0));
-			state = 1;
+			else if (RIGHT == dir)
+			{
+				if (heading == 0 || heading == 1)
+				{
+					this->sprite.setScale(-1, 1);
+					this->heading = 2;
+				}
+				sprite.move(Vector2f(vx, 0));
+				state = 1;
+			}
+			if (!isOnFloor)
+				state = 5;
 		}
-		if (!isOnFloor)
-			state = 5;
 		break;
 	case 1:
-		footState = 0;
-		if (LEFT == dir)
+		if (DEAD == dir)
 		{
-			if (heading == 2)
+			state = 6;
+		}
+		else
+		{
+			footState = 0;
+			if (LEFT == dir)
 			{
-				this->sprite.setScale(1, 1);
-				this->heading = 1;
+				if (heading == 2)
+				{
+					this->sprite.setScale(1, 1);
+					this->heading = 1;
+				}
+				sprite.move(Vector2f(-vx, 0));
+				state = 2;
 			}
-			sprite.move(Vector2f(-vx, 0));
-			state = 2;
-		}
-		else if (RIGHT == dir)
-		{
-			if (heading == 0 || heading == 1)
+			else if (RIGHT == dir)
 			{
-				this->sprite.setScale(-1, 1);
-				this->heading = 2;
+				if (heading == 0 || heading == 1)
+				{
+					this->sprite.setScale(-1, 1);
+					this->heading = 2;
+				}
+				sprite.move(Vector2f(vx, 0));
+				state = 2;
 			}
-			sprite.move(Vector2f(vx, 0));
-			state = 2;
+			else if (STAND == dir)
+			{
+				state = 0;
+			}
+			if (!isOnFloor)
+				state = 5;
 		}
-		else if (STAND == dir)
-		{
-			state = 0;
-		}
-		if (!isOnFloor)
-			state = 5;
 			break;
 	case 2:
-		if (LEFT == dir)
+		if (DEAD == dir)
 		{
-			if (heading == 2)
+			state = 6;
+		}
+		else
+		{
+			if (LEFT == dir)
 			{
-				this->sprite.setScale(1, 1);
-				this->heading = 1;
+				if (heading == 2)
+				{
+					this->sprite.setScale(1, 1);
+					this->heading = 1;
+				}
+				sprite.move(Vector2f(-vx, 0));
+				if (footState)
+					state = 1;
+				else
+					state = 3;
 			}
-			sprite.move(Vector2f(-vx, 0));
-			if (footState)
-				state = 1;
-			else
-				state = 3;
-		}
-		else if (RIGHT == dir)
-		{
-			if (heading == 0 || heading == 1)
+			else if (RIGHT == dir)
 			{
-				this->sprite.setScale(-1, 1);
-				this->heading = 2;
+				if (heading == 0 || heading == 1)
+				{
+					this->sprite.setScale(-1, 1);
+					this->heading = 2;
+				}
+				sprite.move(Vector2f(vx, 0));
+				if (footState)
+					state = 1;
+				else
+					state = 3;
 			}
-			sprite.move(Vector2f(vx, 0));
-			if (footState)
-				state = 1;
-			else
-				state = 3;
+			else if (STAND == dir)
+			{
+				state = 0;
+			}
+			if (!isOnFloor)
+				state = 5;
 		}
-		else if (STAND == dir)
-		{
-			state = 0;
-		}
-		if (!isOnFloor)
-			state = 5;
 		break;
 	case 3:
-		footState = 1;
-		if (LEFT == dir)
+		if (DEAD == dir)
 		{
-			if (heading == 2)
+			state = 6;
+		}
+		else
+		{
+			footState = 1;
+			if (LEFT == dir)
 			{
-				this->sprite.setScale(1, 1);
-				this->heading = 1;
+				if (heading == 2)
+				{
+					this->sprite.setScale(1, 1);
+					this->heading = 1;
+				}
+				sprite.move(Vector2f(-vx, 0));
+				state = 2;
 			}
-			sprite.move(Vector2f(-vx, 0));
-			state = 2;
-		}
-		else if (RIGHT == dir)
-		{
-			if (heading == 0 || heading == 1)
+			else if (RIGHT == dir)
 			{
-				this->sprite.setScale(-1, 1);
-				this->heading = 2;
+				if (heading == 0 || heading == 1)
+				{
+					this->sprite.setScale(-1, 1);
+					this->heading = 2;
+				}
+				sprite.move(Vector2f(vx, 0));
+				state = 2;
 			}
-			sprite.move(Vector2f(vx, 0));
-			state = 2;
+			else if (STAND == dir)
+			{
+				state = 0;
+			}
+			if (!isOnFloor)
+				state = 5;
 		}
-		else if (STAND == dir)
-		{
-			state = 0;
-		}
-		if (!isOnFloor)
-			state = 5;
 		break;
 	case 4:
 
 		break;
 	case 5:
-		if (LEFT == dir)
+		if (DEAD == dir)
 		{
-			if (heading == 2)
+			state = 6;
+		}
+		else
+		{
+			if (LEFT == dir)
 			{
-				this->sprite.setScale(1, 1);
-				this->heading = 1;
+				if (heading == 2)
+				{
+					this->sprite.setScale(1, 1);
+					this->heading = 1;
+				}
+				sprite.move(Vector2f(-vx, 0));
+				state = 2;
 			}
-			sprite.move(Vector2f(-vx, 0));
-			state = 2;
-		}
-		else if (RIGHT == dir)
-		{
-			if (heading == 0 || heading == 1)
+			else if (RIGHT == dir)
 			{
-				this->sprite.setScale(-1, 1);
-				this->heading = 2;
+				if (heading == 0 || heading == 1)
+				{
+					this->sprite.setScale(-1, 1);
+					this->heading = 2;
+				}
+				sprite.move(Vector2f(vx, 0));
+				state = 2;
 			}
-			sprite.move(Vector2f(vx, 0));
-			state = 2;
+			else if (STAND == dir)
+			{
+				state = 0;
+			}
+			if (!isOnFloor)
+				state = 5;
 		}
-		else if (STAND == dir)
-		{
-			state = 0;
-		}
-		if (!isOnFloor)
-			state = 5;
 		break;
 	case 6:
-
+		if (this->getIsDead())
+			state = 6;
+		else
+			state = 0;
 		break;
 	case 7:
 

@@ -40,11 +40,11 @@ void Game::update(void) {
 		handleCollusion();
 
 
-		//handleMarioMove();
 		moveObjects();
+
+
 		window->clear();
 
-		//mario->draw(*window);
 		drawObjects();
 		drawBackground(*window);
 		window->display();
@@ -160,33 +160,59 @@ void Game::handleKeyRelease(Event& e)
 
 void Game::handleMarioMove(void)
 {
-	bool isOnFloor = onFloor(mario);
-	if (isLeftPressed && isRightPressed)
+	if (mario->getIsDead())	//bu if'in içinde fall fonksiyonu çaðýrýlabilir ve burdaki iþ oraya verilebilir.
 	{
-		mario->move(Mario::moveDirection::STAND, isOnFloor);
+		mario->move(Mario::moveDirection::DEAD, false);
+		mario->jump(false, false);
+		if (mario->boundingBox().top > WINDOW_HEIGHT + 50)
+		{
+			mario->setAsLive();
+			mario->setPosition(Vector2f(512, 600));
+		}
 	}
-	/*else if (isLeftPressed && isUpPressed)
-		mario->setPosition(Vector2f(100, 100));	//will handle upper left
-	else if (isRightPressed && isUpPressed)
-		mario->setPosition(Vector2f(500, 500));	//will handle upper right*/
-	else if (isLeftPressed)
-		mario->move(Mario::moveDirection::LEFT, isOnFloor);
-	else if(isRightPressed)
-		mario->move(Mario::moveDirection::RIGHT, isOnFloor);
-	else if(isUpPressed)
-		mario->move(Mario::moveDirection::UP, isOnFloor);
-	else	// no key is pressed
+	else
 	{
-		mario->move(Mario::moveDirection::STAND, isOnFloor);
-	}
+		bool isOnFloor = onFloor(mario);
+		if (isLeftPressed && isRightPressed)
+		{
+			mario->move(Mario::moveDirection::STAND, isOnFloor);
+		}
+		/*else if (isLeftPressed && isUpPressed)
+			mario->setPosition(Vector2f(100, 100));	//will handle upper left
+		else if (isRightPressed && isUpPressed)
+			mario->setPosition(Vector2f(500, 500));	//will handle upper right*/
+		else if (isLeftPressed)
+			mario->move(Mario::moveDirection::LEFT, isOnFloor);
+		else if (isRightPressed)
+			mario->move(Mario::moveDirection::RIGHT, isOnFloor);
+		else if (isUpPressed)
+			mario->move(Mario::moveDirection::UP, isOnFloor);
+		else	// no key is pressed
+		{
+			mario->move(Mario::moveDirection::STAND, isOnFloor);
+		}
 
-	mario->jump(isOnFloor, isUpPressed);
+		mario->jump(isOnFloor, isUpPressed);
+	}
+	
 }
 
 void Game::handleTurtleMove(Object* obj)
 {
+	if (obj->getIsDead())
+	{
+		obj->state = 4;
+		obj->jump(false);
+		if (obj->boundingBox().top >= WINDOW_HEIGHT + 50)
+		{
+			//removeObject();
+		}
+	}
+	else
+	{
+		obj->jump(onFloor(obj));
+	}
 	obj->move();
-	obj->jump(onFloor(obj));
 }
 
 bool Game::onFloor(Object* obj)
@@ -258,6 +284,7 @@ void Game::handleCollusion(void)
 				{
 					//	handleTurtleDie(cur);
 					cur->setAsDead();
+					mario->setVerticalSpeed(-12);
 				}
 			}
 		}
