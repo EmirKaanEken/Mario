@@ -47,7 +47,27 @@ void Turtle::move()
 		else
 			vx = 12;
 	}
+	switch (state)
+	{
+	case 0:
+		footState = false;
+		state = 1;
+		break;
+	case 1:
+		if (footState)
+			state = 0;
+		else
+			state = 2;
+		break;
+	case 2:
+		footState = true;
+		state = 1;
+		break;
+	default:
+		break;
+	}
 	this->sprite.move(vx, vy);
+	this->sprite.setTexture(textures[state]);
 }
 
 void Turtle::jump(bool down)

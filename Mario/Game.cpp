@@ -163,7 +163,7 @@ void Game::handleMarioMove(void)
 	bool isOnFloor = onFloor(mario);
 	if (isLeftPressed && isRightPressed)
 	{
-		//Do nothing, Perhaps we allow it to jump if it is pressed three key simultaneously
+		mario->move(Mario::moveDirection::STAND, isOnFloor);
 	}
 	/*else if (isLeftPressed && isUpPressed)
 		mario->setPosition(Vector2f(100, 100));	//will handle upper left
@@ -180,7 +180,7 @@ void Game::handleMarioMove(void)
 		mario->move(Mario::moveDirection::STAND, isOnFloor);
 	}
 
-	mario->jump(onFloor(mario), isUpPressed);
+	mario->jump(isOnFloor, isUpPressed);
 }
 
 void Game::handleTurtleMove(Object* obj)
@@ -249,11 +249,17 @@ void Game::handleCollusion(void)
 			if (checkCollusion(static_cast<Turtle*>(cur), mario, side))
 			{
 				//cout << "Çarpýþtý, side: " << side << endl;
-				/*if (side == 0 || 2 == side)
-					handleMarioDie();
+				if (side == 0 || 2 == side)
+				{
+					//		handleMarioDie();
+					mario->setAsDead();
+				}
 				else
-					handleTurtleDie(cur);
-			*/}
+				{
+					//	handleTurtleDie(cur);
+					cur->setAsDead();
+				}
+			}
 		}
 		cur = cur->next;
 	}

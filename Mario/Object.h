@@ -10,6 +10,7 @@ protected:
 	int state;
 	int footState;
 	int heading;
+	bool isdead;
 	Object* next;
 	friend class Game;
 	//friend class ObjectList;
@@ -19,6 +20,8 @@ public:
 	Vector2f getPosition();
 	IntRect boundingBox(void);
 	void draw(RenderWindow& window);
+	void setAsDead(void) { this->isdead = true; }
+	void setAsLive(void) { this->isdead = false; }
 	virtual void move(void){}
 	virtual void fall(void){}
 	virtual void jump(bool down){}
