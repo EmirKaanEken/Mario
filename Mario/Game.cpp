@@ -39,7 +39,21 @@ void Game::update(void) {
 		{
 			scoreBoard->setLives(3);
 			scoreBoard->setScore(0);
+
 			//Burada tüm objeler silinecek ve mario ortaya yeniden konumlandýrýlacak
+			Object* cur = objects;
+			while (cur)
+			{
+				if (dynamic_cast<Mario*>(cur) == NULL)
+				{
+					removeObject(cur);
+					cur = objects;		//özellikle burda bunu yapmaktan memnun deðilim ama, cur silinince next'ini alamadýðýmýz için baþtan objects'e eþitliyorum, sadece mario kalmýþsa bi döngü gönüp null oluyo zaten
+				}
+				cur = cur->next;
+			}
+			mario->setPosition(Vector2f(512, 756));
+			mario->setAsLive();
+			
 			timePassed = 0;
 
 			text[0].setString("MARIO");
@@ -85,6 +99,8 @@ void Game::update(void) {
 
 
 			moveObjects();
+
+			handleDeadTurtle();
 
 
 			//window->clear();
@@ -291,19 +307,22 @@ void Game::handleMarioMove(void)
 
 void Game::handleTurtleMove(Object* obj)
 {
+	bool deadFlag = false;
 	if (obj->getIsDead())
 	{
 		obj->state = 4;
 		obj->jump(false);
-		if (obj->boundingBox().top >= WINDOW_HEIGHT + 50)
+		/*if (obj->boundingBox().top >= WINDOW_HEIGHT + 50)
 		{
-			//removeObject();
-		}
+			removeObject(obj);
+			deadFlag = true;
+		}*/
 	}
 	else
 	{
 		obj->jump(onFloor(obj));
 	}
+	//if(!deadFlag)
 	obj->move();
 }
 
@@ -442,4 +461,41 @@ void Game::handleTurtleDie(Object* obj)
 		scoreBoard->setScore(score);
 	}
 	obj->setAsDead();
+}
+
+void Game::removeObject(Object* obj)
+{
+	Object* cur = objects;
+	Object* prev = NULL;
+	while (cur) {
+		if (cur == obj) {
+			if (prev) {
+				prev->next = cur->next;
+			}
+			else {
+				objects = cur->next;
+			}
+			delete cur;
+			return;
+		}
+		prev = cur;
+		cur = cur->next;
+	}
+}
+
+void Game::handleDeadTurtle(void)
+{
+	Object* cur = objects;
+	while (cur)
+	{
+		if (dynamic_cast<Turtle*>(cur) != NULL)
+		{
+			if (cur->getIsDead() && cur->boundingBox().top >= WINDOW_HEIGHT + 100)
+			{
+				removeObject(cur);
+				return;
+			}
+		}
+		cur = cur->next;
+	}
 }

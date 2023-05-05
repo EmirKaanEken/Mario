@@ -26,6 +26,8 @@ public:
 	void drawMainScreen(RenderWindow& window);
 	Turtle* addTurtle(void);
 	Mario* addMario(void);
+	void removeObject(Object*);
+	void handleDeadTurtle(void);
 	void handleMarioDie(void);
 	void handleTurtleDie(Object*);
 	void spawnTurtle(void);
