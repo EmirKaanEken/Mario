@@ -7,19 +7,19 @@
 
 class Game {
 	Mario* mario;
-	Object* objects;
+	Object* objects;		//this linked list stores turtles and our mario object
 	RenderWindow* window;
 	Texture bgTextures[4];
-	Sprite* platforms;
+	Sprite* platforms;		//platform array, contains bricks, floor and pipes
 	Font font;
 	Text text[2];
-	bool isUpPressed, isRightPressed, isLeftPressed;
-	float timePassed;
+	bool isUpPressed, isRightPressed, isLeftPressed;		//used in key events
+	float timePassed;										
 public:
 	Game();
 	//~Game();
 	ScoreBoard *scoreBoard;
-	int gameState;		//0: ana ekran		1: oyunda		2: win			3: lose
+	int gameState;		//0: Main page		1: In game		2: Win Page		3: Lose Page
 	void drawBackground(RenderWindow& window);
 	void setBackground();
 	void setMainScreen();

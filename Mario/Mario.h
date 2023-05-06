@@ -7,7 +7,7 @@ class Mario : public Object {
 	float vy;
 public:
 	Mario(RenderWindow* window);
-	enum moveDirection {
+	enum moveDirection {		//this enum not only has directions but also STAND and DEAD, since they are also different states of moves to be processed
 		UP,
 		RIGHT,
 		LEFT,
@@ -19,5 +19,5 @@ public:
 	//void fall(void);
 	void setVerticalSpeed(float s) { this->vy = s; }
 	float getVerticalSpeed(void) { return this->vy; }
-	Texture getLiveTexture(void) { return this->textures[7]; }
+	Texture getLiveTexture(void) { return this->textures[7]; }	//returns mario head texture
 };

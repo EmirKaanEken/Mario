@@ -53,6 +53,9 @@ void Game::update(void) {
 			}
 			mario->setPosition(Vector2f(512, 756));
 			mario->setAsLive();
+			this->isLeftPressed = false;
+			this->isRightPressed = false;
+			this->isUpPressed = false;
 			
 			timePassed = 0;
 
