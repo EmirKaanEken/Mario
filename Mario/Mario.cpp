@@ -24,9 +24,9 @@ Mario::Mario(RenderWindow* window) : Object(window) {
 
 void Mario::move(moveDirection dir, bool isOnFloor)		//dir: left, right, up, stand and also dead state		isOnFloor: wheter mario is on the floor
 {
-	/*since horizontal move of mario is physically independent from states, it is decided outside of the switch case block. It basically:
+	/*since physical horizontal move of mario is independent from states, it is decided outside of the switch case block. It basically:
 		if LEFT, move left and if RIGHT, move right. However, if the heading is the opposite of the inserted direction, proper scale setting should be done to the texture
-		to mario to heading correct way. */
+		of mario to make heading correct way. */
 	if (LEFT == dir)
 	{
 		if (heading == 2)
@@ -48,7 +48,7 @@ void Mario::move(moveDirection dir, bool isOnFloor)		//dir: left, right, up, sta
 	
 
 
-	switch (this->state)
+	switch (this->state)	//other than !onFloor DEAD and STAND situations, states goes as 1-2-3-2-1-2... Variable "footstate" decides whether state goes from 2 to 1 or 3.
 	{
 	/*For all cases, if the function is called with DEAD parameter, state directly goes to 6 and process dead routine. if it not DEAD but mario is not on the floor,
 	then directly goes to state 5 since mario should always stay in texture mario6 while it is on the air*/
@@ -59,12 +59,8 @@ void Mario::move(moveDirection dir, bool isOnFloor)		//dir: left, right, up, sta
 		}
 		else
 		{
-			if (LEFT == dir)
+			if (LEFT == dir || RIGHT == dir)	//when start moving from stand still, start with state 1
 			{
-				state = 1;
-			}
-			else if (RIGHT == dir)
-			{	
 				state = 1;
 			}
 			if (!isOnFloor)
@@ -156,8 +152,8 @@ void Mario::move(moveDirection dir, bool isOnFloor)		//dir: left, right, up, sta
 		}
 		break;
 	case 6:
-		if (this->getIsDead())
-		{
+		if (this->getIsDead())		//at every screen update, wheter the mario is still die is checked. As long as it is dead, death routine continues, else: turn back to STAND
+		{													//(mario respawn is triggered on game class, when mario fall below the border of the window)
 			state = 6;
 			this->canKill = false;
 		}
@@ -167,9 +163,6 @@ void Mario::move(moveDirection dir, bool isOnFloor)		//dir: left, right, up, sta
 			this->canKill = true;
 		}
 		break;
-	case 7:
-
-		break;
 	default:
 		break;
 	}
@@ -178,6 +171,8 @@ void Mario::move(moveDirection dir, bool isOnFloor)		//dir: left, right, up, sta
 
 void Mario::jump(bool down, bool up)
 {
+	/*the "down" variable represents whether mario is on the floor. the "up" variable on the other hand represents whether the key UP is pressed. With the following nested if
+	structure, the jump can only be triggered while mario is on the floor. And as long is it is not on the floor, it accelerates towards to down.*/
 	if (down)
 	{
 		vy = 0;
@@ -188,4 +183,17 @@ void Mario::jump(bool down, bool up)
 		vy += 11 * 0.1;
 	}
 	sprite.move(Vector2f(0, vy));
+}
+
+void Mario::fall(void)
+{
+	this->move(Mario::moveDirection::DEAD, false);	//For the texture, it send DEAD enum. The second parameter is unimportant here due to first parameter being DEAD is already suppresses it
+	this->jump(false, true);	//In sake of mario pass through the platforms, first parameter is sent as false statically. Second parameter is unimportant here also.
+
+	/*when mario fall below the bottom border of the screen, it respawns.*/
+	if (this->boundingBox().top > WINDOW_HEIGHT + 50)
+	{
+		this->setAsLive();
+		this->setPosition(Vector2f(512, 600));
+	}
 }

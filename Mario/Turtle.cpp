@@ -98,3 +98,9 @@ void Turtle::jump(bool down)
 	}
 	sprite.move(Vector2f(0, vy));
 }
+
+void Turtle::fall(void)
+{
+	this->state = 4;
+	this->jump(false);
+}

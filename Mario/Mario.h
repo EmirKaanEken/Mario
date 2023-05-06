@@ -16,7 +16,7 @@ public:
 	};
 	void move(moveDirection, bool);
 	void jump(bool, bool);
-	//void fall(void);
+	void fall(void);
 	void setVerticalSpeed(float s) { this->vy = s; }
 	float getVerticalSpeed(void) { return this->vy; }
 	Texture getLiveTexture(void) { return this->textures[7]; }	//returns mario head texture

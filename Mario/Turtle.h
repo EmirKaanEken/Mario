@@ -9,5 +9,5 @@ public:
 	Turtle(RenderWindow* window);
 	void move();
 	void jump(bool down);
-	//void fall(void);
+	void fall(void);
 };

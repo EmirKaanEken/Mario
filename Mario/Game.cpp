@@ -5,12 +5,14 @@ Game::Game() {
 	this->isRightPressed = false;
 	this->isUpPressed = false;
 	this->timePassed = 0;
+	/*all keyPress variables set 0, no key is pressed at the beggining. The game time is 0.*/
+	
 	window = new RenderWindow(VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Mario");
 
-	this->setBackground();
+	this->setBackground();		//static coordinates of the platforms are set
 
-	mario = addMario();
-	mario->setPosition(Vector2f(512, 756));
+	mario = addMario();		//created a mario object and is added to Object linked list. It can be directly accessible with mario variable inside the Game class, without a travel on the linked list  
+	mario->setPosition(Vector2f(512, 756));	//static beginning coordinates
 
 	scoreBoard = new ScoreBoard(mario->getLiveTexture());
 
@@ -20,37 +22,39 @@ Game::Game() {
 		text[i].setFont(font);
 		text[i].setFillColor(Color::Magenta);
 	}
-	
 	text[0].setCharacterSize(120);
-	//text[0].setPosition(Vector2f(300, 200));
-	//text[1].setPosition(Vector2f(300, 400));
+	/*The font is initialized in sake of using it at the main page, win page and lose page*/
+	
 
-	gameState = 0;
+	gameState = 0;		//initial game state is 0(main page).
 }
 
 void Game::update(void) {
-	while (window->isOpen())
+	while (window->isOpen())	//As long as window is open...
 	{
 		Event event;
 
 		window->clear();
 
-		if (0 == gameState)
+		if (0 == gameState)	//handles displaying main page. It resets all the game variables.
 		{
 			scoreBoard->setLives(3);
 			scoreBoard->setScore(0);
 
-			//Burada tüm objeler silinecek ve mario ortaya yeniden konumlandýrýlacak
+		
 			Object* cur = objects;
 			while (cur)
 			{
 				if (dynamic_cast<Mario*>(cur) == NULL)
 				{
 					removeObject(cur);
-					cur = objects;		//özellikle burda bunu yapmaktan memnun deðilim ama, cur silinince next'ini alamadýðýmýz için baþtan objects'e eþitliyorum, sadece mario kalmýþsa bi döngü gönüp null oluyo zaten
+					cur = objects;		//since the cur is deleted at the previous line, we define it as objects once again. When there left only the mario, the loop cyles just one more time and continues due to cur = NULL
 				}
 				cur = cur->next;
 			}
+			/*all the objects other than mario, that are turtles are removed from linked list.*/
+
+
 			mario->setPosition(Vector2f(512, 756));
 			mario->setAsLive();
 			this->isLeftPressed = false;
@@ -65,6 +69,10 @@ void Game::update(void) {
 			{
 				text[i].setPosition(Vector2f((WINDOW_WIDTH - text[i].getGlobalBounds().width) / 2.0f, 200 + (i * 150)));
 			}
+			window->draw(text[0]);
+			window->draw(text[1]);
+			/*The text is set and written to the screen*/
+
 
 			while (window->pollEvent(event))
 			{
@@ -76,14 +84,13 @@ void Game::update(void) {
 						gameState = 1;
 				}
 			}
-			window->draw(text[0]);
-			window->draw(text[1]);
+			/*handle close case and space key is pressed case. gameState = 1 is the game start.*/
+			
 		}
-		else if (1 == gameState)
+		else if (1 == gameState)	//handles the actual game mechanics and display it.
 		{
 			while (window->pollEvent(event))
 			{
-				Vector2f prePos = mario->getPosition();
 				if (event.type == Event::Closed)
 					window->close();
 				else if (event.type == Event::KeyPressed)
@@ -95,25 +102,26 @@ void Game::update(void) {
 					handleKeyRelease(event);
 				}
 			}
+			/*handle close case and arrow keys are pressed-released cases. When an arrow key is pressed, relevant bool variable is set to 1 and when it released, it set to 0.
+			The reason we implement the keyPress event like this is to achieve diagonal move when they are pressed simultaneously. More details in handleKeyPres-Release functions*/
 
-			spawnTurtle();
+			spawnTurtle();	//spawn a turtle as creating an object and adding it to the Object linked list at certain times.
 
-			handleCollusion();
-
-
-			moveObjects();
-
-			handleDeadTurtle();
+			handleCollusion();	//handle the mario-turtle collision. One of them dies and relevant objectives are handled. The collision check is done inside of this function
 
 
-			//window->clear();
+			moveObjects();	//handles mario and turtle move function by traveling Object linked list.
+
+			handleDeadTurtle();	//at every cycle, it travels the Object linked list to find a dead turtle which is fall out of the screen border. If there is, remove it.
+
 
 			drawObjects();
 			drawBackground(*window);
 			scoreBoard->drawScoreBoard(*window);
 			timePassed += 0.1;
+			/*all objects, platforms and scoreBoard are drawn. Time increased 0.1 second because window refresh rate is set to 100ms.*/
 		}
-		else if (2 == gameState)
+		else if (2 == gameState)	//handles displaying win page. 
 		{
 			text[0].setString("YOU WIN");
 			text[1].setString("Press \"Space\" to Back Main Screen");
@@ -121,6 +129,9 @@ void Game::update(void) {
 			{
 				text[i].setPosition(Vector2f((WINDOW_WIDTH - text[i].getGlobalBounds().width) / 2.0f, 200 + (i * 150)));
 			}
+			window->draw(text[0]);
+			window->draw(text[1]);
+			/*The text is set and written to the screen*/
 
 			while (window->pollEvent(event))
 			{
@@ -129,11 +140,11 @@ void Game::update(void) {
 				else if (event.type == Event::KeyPressed)
 				{
 					if (Keyboard::Space == event.key.code)
-						gameState = 0;
+						gameState = 0;	//main page
 				}
 			}
-			window->draw(text[0]);
-			window->draw(text[1]);
+			/*handle close case and space key is pressed case. If it is pressed, turn back to main page.*/
+			
 		}
 		else
 		{
@@ -143,6 +154,9 @@ void Game::update(void) {
 			{
 				text[i].setPosition(Vector2f((WINDOW_WIDTH - text[i].getGlobalBounds().width) / 2.0f, 200 + (i * 150)));
 			}
+			window->draw(text[0]);
+			window->draw(text[1]);
+			/*The text is set and written to the screen*/
 
 			while (window->pollEvent(event))
 			{
@@ -154,35 +168,36 @@ void Game::update(void) {
 						gameState = 0;
 				}
 			}
-			window->draw(text[0]);
-			window->draw(text[1]);
+			/*handle close case and space key is pressed case. If it is pressed, turn back to main page.*/
+			
 		}
 
 		
-		window->display();
-		sleep(milliseconds(100));
+		window->display();			//whatever the game state are and which objects are drawn, displays the screen.
+		sleep(milliseconds(100));	//sscreen refresh rate is 100ms.
 		
 	}
 }
 
 void Game::setBackground()
 {
+	/*this function just sets the textures and static coordinates of the background platforms: bricks, fkoor and pipes. It is called just once at the constructor of Game*/
 	this->bgTextures[0].loadFromFile("../assets/floor.png");
 	this->bgTextures[1].loadFromFile("../assets/brick.png");
 	this->bgTextures[2].loadFromFile("../assets/pipe.png");
 	this->bgTextures[3].loadFromFile("../assets/pipeS.png");
 
-	//setting textures of backgrounds
-	this->platforms = new Sprite[81];
+
+	this->platforms = new Sprite[81];	//there are 1 floor, 4 pipes and 76 bricks = 81 sprite.
 	for (int i = 0; i < 81; i++) {
 		if (0 == i)
-			this->platforms[i].setTexture(this->bgTextures[0]);
+			this->platforms[i].setTexture(this->bgTextures[0]);		//platforms[0]: floor
 		else if (1 == i || 2 == i)
-			this->platforms[i].setTexture(this->bgTextures[2]);
+			this->platforms[i].setTexture(this->bgTextures[2]);		//platforms[1-2]: bottom pipes
 		else if (3 == i || 4 == i)
-			this->platforms[i].setTexture(this->bgTextures[3]);
+			this->platforms[i].setTexture(this->bgTextures[3]);		//platforms[3-4]: upper pipes
 		else
-			this->platforms[i].setTexture(this->bgTextures[1]);
+			this->platforms[i].setTexture(this->bgTextures[1]);		//platforms[5>=]: bricks
 	}
 
 
@@ -215,10 +230,14 @@ void Game::setBackground()
 		else
 			this->platforms[i].setPosition(WINDOW_WIDTH - (brickPlatformIndexes[6]++ * brickWidth), 200);
 	}
+	/*all coordinates are set manually by trial and error. Since the origin is top left corner of the sprite by default, while changing scale of the ppipes in sake of change
+	their direction they are also shifted. Also, a brick platform attached to left border of screen use brickPlatformIndexes as 0, while brick platforms attached to right border
+	of the screen use it as 1 due to the same sprite origin problem.*/
 }
 
 void Game::drawBackground(RenderWindow& window)
 {
+	/*This function is called at every cycle since the window is cleared at every cycle. It just travels the platform array and draw them all.*/
 	for (int i = 0; i < 81; i++) {
 		window.draw(this->platforms[i]);
 	}	
@@ -226,6 +245,7 @@ void Game::drawBackground(RenderWindow& window)
 
 Mario* Game::addMario(void)
 {
+	/*Create a Mario object and add it(prepend) to the Object linked list. This is called just once at the constructor of Game since we only have 1 mario.*/
 	Mario* mario = new Mario(window);
 	mario->next = objects;
 	objects = mario;
@@ -234,6 +254,8 @@ Mario* Game::addMario(void)
 
 Turtle* Game::addTurtle(void)
 {
+	/*Create a Turtle object and add it(prepend) to the Object linked list. Decision of which pipe it comes from is provided with the rand() function. This is called
+	5 times as the game continues, at certain times.*/
 	Turtle* turtle = new Turtle(window);
 	turtle->next = objects;
 	objects = turtle;
@@ -252,6 +274,7 @@ Turtle* Game::addTurtle(void)
 
 void Game::handleKeyPres(Event& e)
 {
+	/*when a key is pressed, set the relevant bool variable to 1. They will be used to send signal to mario move function*/
 	if (e.key.code == Keyboard::Right)
 		isRightPressed = true;
 	else if (e.key.code == Keyboard::Left)
@@ -261,6 +284,7 @@ void Game::handleKeyPres(Event& e)
 }
 void Game::handleKeyRelease(Event& e)
 {
+	/*when a key is released, set the relevant bool variable to 1. They will be used to send signal to mario move function*/
 	if (e.key.code == Keyboard::Right)
 		isRightPressed = false;
 	else if (e.key.code == Keyboard::Left)
@@ -271,62 +295,45 @@ void Game::handleKeyRelease(Event& e)
 
 void Game::handleMarioMove(void)
 {
-	if (mario->getIsDead())	//bu if'in içinde fall fonksiyonu çaðýrýlabilir ve burdaki iþ oraya verilebilir.
+	if (mario->getIsDead())	//if mario is dead, call fall function to process mario die animation
 	{
-		mario->move(Mario::moveDirection::DEAD, false);
-		mario->jump(false, false);
-		if (mario->boundingBox().top > WINDOW_HEIGHT + 50)
-		{
-			mario->setAsLive();
-			mario->setPosition(Vector2f(512, 600));
-		}
+		mario->fall();
 	}
-	else
+	else	//if mario is not dead, this checks wheter mario is on the floor. Then, according to the key press variables, relevant signal is sent to mario move function
 	{
 		bool isOnFloor = onFloor(mario);
-		if (isLeftPressed && isRightPressed)
+		if (isLeftPressed && isRightPressed)	//if both right and left arrow key is pressed, mario stands
 		{
 			mario->move(Mario::moveDirection::STAND, isOnFloor);
 		}
-		/*else if (isLeftPressed && isUpPressed)
-			mario->setPosition(Vector2f(100, 100));	//will handle upper left
-		else if (isRightPressed && isUpPressed)
-			mario->setPosition(Vector2f(500, 500));	//will handle upper right*/
-		else if (isLeftPressed)
+		else if (isLeftPressed)									//if only left arrow key is pressed, mario moves to left
 			mario->move(Mario::moveDirection::LEFT, isOnFloor);
-		else if (isRightPressed)
+		else if (isRightPressed)									//if only right arrow key is pressed, mario moves to right
 			mario->move(Mario::moveDirection::RIGHT, isOnFloor);
-		else if (isUpPressed)
-			mario->move(Mario::moveDirection::UP, isOnFloor);
-		else	// no key is pressed
+		else	// if no key is pressed, mario stands
 		{
 			mario->move(Mario::moveDirection::STAND, isOnFloor);
 		}
+		/*the code part above handles horizontal mario move*/
 
 		mario->jump(isOnFloor, isUpPressed);
+		/*handles mario vertical move. If it is on air, it accelerates toward down. If it is on the floor, there is no vertical move unless up arrow key is pressed. When
+		mario is on the floor and up arrow key is pressed, an initial vertical speed is set towards to up.*/
 	}
 	
 }
 
 void Game::handleTurtleMove(Object* obj)
 {
-	bool deadFlag = false;
-	if (obj->getIsDead())
+	if (obj->getIsDead())	//if turtle is dead, call fall function to process turtle die animation
 	{
-		obj->state = 4;
-		obj->jump(false);
-		/*if (obj->boundingBox().top >= WINDOW_HEIGHT + 50)
-		{
-			removeObject(obj);
-			deadFlag = true;
-		}*/
+		obj->fall();
 	}
-	else
+	else	//if turtle is not dead, process fall from the cliff or walk on the floor.
 	{
 		obj->jump(onFloor(obj));
 	}
-	//if(!deadFlag)
-	obj->move();
+	obj->move();	//sice the dead texture is also set in this function, it is called wheter turtle is dead or alive. The correct animation will be processed inside here.
 }
 
 bool Game::onFloor(Object* obj)
@@ -334,17 +341,22 @@ bool Game::onFloor(Object* obj)
 	/*Burada þu an width falan karþýlaþtýrarak, aslýnda platformla çakýþtýðý taraflarý ayýrmaya baþladým. Genel bi checkHit fonksiyonuna bunlarýn çoðunu
 	geçirip, burada sadece ilgili fonksiyonu çaðýrýp onun geri dönüþüne göre true false dönerim mesela, o fonksiyonun diðer çýktýlarý için de baþka 
 	fonksiyonlarda iþ yaparým*/
+
+	/*the intersectedRect variable is used to decide which side object hit the platform.*/
 	FloatRect intersectedRect;
-	for (int j = 0; j < 81; j++)
+	for (int j = 0; j < 81; j++)	//the obje checks if it intersects any platform in the game at every cycle
 	{
+		/*for any platform, if the object intersects with it, we check how they intersect by using intersectedRect. It is defined by the "intersects" function and its value is
+		the intersected rectangle of two sprite*/
 		if (platforms[j].getGlobalBounds().intersects(obj->sprite.getGlobalBounds(), intersectedRect))
 		{
-			if (intersectedRect.width > intersectedRect.height)
+			if (intersectedRect.width > intersectedRect.height)	//this means the object hit the platform from above or below, not sides.
 			{
-				if(platforms[j].getGlobalBounds().top > obj->sprite.getGlobalBounds().top)
+				if(platforms[j].getGlobalBounds().top > obj->sprite.getGlobalBounds().top)	//checks if the object is placed above the platform. So we know it hit from above.
 				{
 						obj->setPosition(Vector2f(obj->getPosition().x, platforms[j].getGlobalBounds().top - (obj->sprite.getGlobalBounds().height/ 2.0f) + 1)); //biraz içeri girseler de en tepeye çýksýn diye koydum ama iþlem hýzýný yavaþlattýðý için bazen platform içinden geçilmesine sebep luyo
 						return true;
+						/*if all the if checks are true, then the object is on the floor. It also set the object position exactly on the floor, but not partially inside the platform.*/
 				}
 			}
 		}
@@ -352,25 +364,30 @@ bool Game::onFloor(Object* obj)
 	return false;
 }
 
-bool Game::checkCollusion(Turtle* t, Mario* m, int& side)	//Mario, side 0: soldan, 1: aþaðýdan, 2: saðdan, 3: üstten çarptý turtle'a
+bool Game::checkCollusion(Turtle* t, Mario* m, int& side)	//The mario hit the turtle from=> side 0: left, 1: below, 2: right, 3: above
 {
 	IntRect turtleRect = t->boundingBox();
 	IntRect marioRect = m->boundingBox();
+	/*get the global bounds of the mario and current turtle*/
+
 	IntRect resRect;
-	if (turtleRect.intersects(marioRect, resRect))
+	/*resRect will be the intersected rectangle of two sprite*/
+
+
+	if (turtleRect.intersects(marioRect, resRect))	//if turtle and mario hit each other...
 	{
-		if (resRect.width > resRect.height)
+		if (resRect.width > resRect.height)		//Mario hit from above or below
 		{
-			if (turtleRect.top > marioRect.top)
+			if (turtleRect.top > marioRect.top)		//Mario hit from above (since y index of the screen increases to the below.
 				side = 3;
-			else
+			else									//Mario hit from below
 				side = 1;
 		}
-		else
+		else										//Mario hit from left or right
 		{
-			if (turtleRect.left < marioRect.left)
+			if (turtleRect.left < marioRect.left)	// Mario hit from right
 				side = 2;
-			else
+			else									//Mario hit from left
 				side = 0;
 		}
 		return true;
@@ -380,6 +397,7 @@ bool Game::checkCollusion(Turtle* t, Mario* m, int& side)	//Mario, side 0: solda
 
 void Game::handleCollusion(void)
 {
+	/*this function travels Object linked list and checks if mario has hit any of the turtles.*/
 	Object* cur = objects;
 	int side;
 	while (cur)
@@ -388,15 +406,14 @@ void Game::handleCollusion(void)
 		{
 			if (checkCollusion(static_cast<Turtle*>(cur), mario, side))
 			{
-				//cout << "Çarpýþtý, side: " << side << endl;
-				if ((0 == side || 2 == side) && cur->canKill)
+				if ((0 == side || 2 == side) && cur->canKill)		//if Mario hit from left or right and the turtle is able to kill (is alive), mario should die
 				{
 					handleMarioDie();
 				}
-				else if((1 == side || 3 == side) && mario->canKill)
+				else if((1 == side || 3 == side) && mario->canKill)	//if Mario hit from above or below and the mario is able to kill (is alive), turtle should die
 				{
 					handleTurtleDie(cur);
-					if(3 == side)
+					if(3 == side)						// if Mario hit from above, it also bounce of the turtle shell.
 						mario->setVerticalSpeed(-12);
 				}
 			}
@@ -407,6 +424,7 @@ void Game::handleCollusion(void)
 
 void Game::drawObjects(void)
 {
+	/*travel the Object linked list and draw all of their sprites.*/
 	Object* cur = objects;
 	while (cur)
 	{
@@ -417,6 +435,7 @@ void Game::drawObjects(void)
 
 void Game::spawnTurtle(void)
 {
+	/*Spawns 5 turtles at the certain times. In this case, it spawn 1, 7, 14, 17 and 25 seconds after the game start.*/
 	if (1.05 < timePassed && timePassed < 1.15)
 		addTurtle();
 	else if (7.05 < timePassed && timePassed < 7.15)
@@ -431,6 +450,8 @@ void Game::spawnTurtle(void)
 
 void Game::moveObjects(void)
 {
+	/*travels the Object linked list and calls relevant handle move function of the objects. This can be implemented using polymorphism, however especiall handlemariomove 
+	function is using lots of variables from the game class and sending all of them as parameters is not make sence I think.*/
 	Object* cur = objects;
 	while (cur)
 	{
@@ -444,6 +465,9 @@ void Game::moveObjects(void)
 
 void Game::handleMarioDie(void)
 {
+	/*This function is called when mario hit a turtle from sides. Because of this, this function will be called lots of time when mario dies and before go outside of the 
+	turtle rectangle area. So it should check if the mario is already dead before it decreases the live count. But when it does decrease it, it also checks if the player
+	has any live and if they has not, the game finishes as lose.*/
 	if (!mario->getIsDead())
 	{
 		scoreBoard->setLives(scoreBoard->getLives() - 1);
@@ -455,6 +479,9 @@ void Game::handleMarioDie(void)
 
 void Game::handleTurtleDie(Object* obj)
 {
+	/*This function is called when mario hit the turtle from above or below. Because of this, this function will be called lots of time when turtle die and before it go 
+	outside of the mar,o rectangle area. So it should check if th eturtle is already dead before it increases the player point. But when it does increas, it alsco checks
+	if the player has reached 500 point and if they has, the game finishes as win.*/
 	if (!obj->getIsDead())
 	{
 		int score = stoi(scoreBoard->getScore());
@@ -468,6 +495,8 @@ void Game::handleTurtleDie(Object* obj)
 
 void Game::removeObject(Object* obj)
 {
+	/*removes the object from the Object linked list by travelling. The "prev" variable is used to properly remove an object at the middle of the list. The previous object of
+	the removed object should point the next object of the removed one.*/
 	Object* cur = objects;
 	Object* prev = NULL;
 	while (cur) {
@@ -488,6 +517,8 @@ void Game::removeObject(Object* obj)
 
 void Game::handleDeadTurtle(void)
 {
+	/*Travels the Object linked list and if it find a dead turtle which is fall below the bottom border of the screen, it removes it. Since it removes only the first turtle
+	that satisfy the conditions, this function is called every cycle.*/
 	Object* cur = objects;
 	while (cur)
 	{
