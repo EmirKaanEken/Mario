@@ -41,4 +41,5 @@ public:
 	void drawObjects(void);
 	void moveObjects(void);
 	void update(void);
+	void checkAndHandleTurtleMeet(void);
 };

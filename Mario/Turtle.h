@@ -10,4 +10,5 @@ public:
 	void move();
 	void jump(bool down);
 	void fall(void);
+	int surpriseCounter;
 };

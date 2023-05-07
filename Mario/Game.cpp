@@ -107,13 +107,14 @@ void Game::update(void) {
 
 			spawnTurtle();	//spawn a turtle as creating an object and adding it to the Object linked list at certain times.
 
+			checkAndHandleTurtleMeet();
+
 			handleCollusion();	//handle the mario-turtle collision. One of them dies and relevant objectives are handled. The collision check is done inside of this function
 
 
 			moveObjects();	//handles mario and turtle move function by traveling Object linked list.
 
 			handleDeadTurtle();	//at every cycle, it travels the Object linked list to find a dead turtle which is fall out of the screen border. If there is, remove it.
-
 
 			drawObjects();
 			drawBackground(*window);
@@ -529,6 +530,47 @@ void Game::handleDeadTurtle(void)
 				removeObject(cur);
 				return;
 			}
+		}
+		cur = cur->next;
+	}
+}
+
+void Game::checkAndHandleTurtleMeet(void)
+{
+	/*with a double loop on Object linked list...*/
+	Object* cur = objects;
+	Object* other = objects->next;
+	FloatRect curRect, otherRect;
+	while (cur)
+	{
+		while (other)
+		{
+			/*if both cur and other points to a turtle object and they are not the same objects...*/
+			if (dynamic_cast<Turtle*>(cur) != NULL && dynamic_cast<Turtle*>(other) != NULL && cur != other)
+			{
+				curRect = cur->sprite.getGlobalBounds();
+				otherRect = other->sprite.getGlobalBounds();
+				/*checks if a turtle has collision with an other turtle.*/
+				if (curRect.intersects(otherRect))
+				{
+					/*if the left one is heading right and the right one is heading left, they goes into surprise state and change headings.*/
+					if (curRect.left < otherRect.left && cur->heading == 2 && other->heading == 1)
+					{
+						cur->heading = 1;
+						other->heading = 2;						
+						cur->state = 3;
+						other->state = 3;
+					}
+					else if (curRect.left > otherRect.left && cur->heading == 1 && other->heading == 2)
+					{
+						cur->heading = 2;
+						other->heading = 1;
+						cur->state = 3;
+						other->state = 3;
+					}
+				}
+			}
+			other = other->next;
 		}
 		cur = cur->next;
 	}
