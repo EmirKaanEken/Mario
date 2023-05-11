@@ -17,7 +17,6 @@ class Game {
 	float timePassed;										
 public:
 	Game();
-	//~Game();
 	ScoreBoard *scoreBoard;
 	int gameState;		//0: Main page		1: In game		2: Win Page		3: Lose Page
 	void drawBackground(RenderWindow& window);
@@ -40,4 +39,5 @@ public:
 	void moveObjects(void);
 	void update(void);
 	void checkAndHandleTurtleMeet(void);
+	void increaseTurtleSpeed(void);
 };

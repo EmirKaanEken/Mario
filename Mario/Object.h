@@ -2,6 +2,7 @@
 #include "Common.h"
 
 class Object {
+	Vector2f pos;
 protected:
 	Texture textures[8];
 	Sprite sprite;

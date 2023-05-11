@@ -16,7 +16,9 @@ Turtle::Turtle(RenderWindow* window) : Object(window) {
 
 	this->vx = 0;
 	this->vy = 0;
+	this->dvx = 0;
 	this->animationTimeCounter = 0;
+	this->isTriggered = false;
 }
 
 void Turtle::move()
@@ -26,15 +28,21 @@ void Turtle::move()
 		this->sprite.setScale(-1, 1);
 		if (this->boundingBox().left <= 0) {	//if it hit the leftmost of the screen, start to move to right, change heading to 2(right) and setScale to make texture heading right
 			this->heading = 2;
-			vx = 12;
 			this->sprite.setScale(1, 1);
+			if (isTriggered)				//if a turtle once triggered, it will directly go it max speed it can reach
+				vx = 17;
+			else
+				vx = 12 + dvx;
 		}
 		else if (this->boundingBox().top >= 725 && this->boundingBox().left <= 160)	//if it gose into the pipes at the floor, they out of the pipes above and opposite side
 		{																			// since it moving left right now, it goes into the left one, teleport to the upper right
 			this->sprite.setPosition(800, 80);
 		}
 		else			//if it do not hit the leftmost screen or go inside a pipe, just continue to move to left
-			vx = -12;
+			if (isTriggered)
+				vx = -17;
+			else
+				vx = -12 - dvx;
 	}
 	else		//if it moving to right
 	{
@@ -42,15 +50,21 @@ void Turtle::move()
 		if (this->boundingBox().left + this->boundingBox().width >= WINDOW_WIDTH)	//if it hit the rightmost of the screen, start to move to left, change heading to 1(left) and setScale to make texture heading left
 		{
 			this->heading = 1;
-			vx = -12;
 			this->sprite.setScale(-1, 1);
+			if (isTriggered)
+				vx = -17;
+			else
+				vx = -12 - dvx;
 		}
 		else if (this->boundingBox().top >= 725 && this->boundingBox().left >= (WINDOW_WIDTH - 160)) //if it gose into the pipes at the floor, they out of the pipes above and opposite side
 		{																							 // since it moving right right now, it goes into the right one, teleport to the upper left
 			this->sprite.setPosition(200, 80);
 		}
 		else		//if it do not hit the rightmost screen or go inside a pipe, just continue to move to right
-			vx = 12;
+			if (isTriggered)
+				vx = 17;
+			else
+				vx = 12 + dvx;
 	}
 	switch (state)
 	{
@@ -98,6 +112,7 @@ void Turtle::move()
 			{
 				if (animationTimeCounter <= 80)
 				{
+					this->isTriggered = true;			
 					if (animationTimeCounter <= 20)		//when it is set as half dead, we give it 2 seconds before it can be killed by sides, to prevent 
 						this->canDie = false;			//	it is killed by the mario just after it is hit from below.
 					else

@@ -111,6 +111,7 @@ void Game::update(void) {
 
 			handleCollusion();	//handle the mario-turtle collision. One of them dies and relevant objectives are handled. The collision check is done inside of this function
 
+			increaseTurtleSpeed();	//At the time interval 25-50 seconds, increase turtle speeds.
 
 			moveObjects();	//handles mario and turtle move function by traveling Object linked list.
 
@@ -124,7 +125,7 @@ void Game::update(void) {
 		}
 		else if (2 == gameState)	//handles displaying win page. 
 		{
-			text[0].setString("YOU WIN");
+			text[0].setString("YOU WIN!");
 			text[1].setString("Press \"Space\" to Back Main Screen");
 			for (int i = 0; i < 2; i++)
 			{
@@ -149,7 +150,7 @@ void Game::update(void) {
 		}
 		else
 		{
-			text[0].setString("YOU LOSE");
+			text[0].setString("Game Over!");
 			text[1].setString("Press \"Space\" to Back Main Screen");
 			for (int i = 0; i < 2; i++)
 			{
@@ -580,5 +581,23 @@ void Game::checkAndHandleTurtleMeet(void)
 		cur = cur->next;
 		if(cur)
 			other = cur->next;
+	}
+}
+
+void Game::increaseTurtleSpeed(void)
+{
+	/*After 30 seconds from game begin, the turtles starts to increase gain for 20 seconds and reach max speed ~17 (12 + 5)*/
+	if (this->timePassed > 30 && this->timePassed < 50)
+	{
+		Object* obj = objects;
+		while (obj)
+		{
+			if (dynamic_cast<Turtle*>(obj) != NULL)
+			{
+				static_cast<Turtle*>(obj)->setExtraSpeed(timePassed/10.0f);
+			}
+
+			obj = obj->next;
+		}
 	}
 }

@@ -12,6 +12,7 @@ Object::Object(RenderWindow* window)
 void Object::setPosition(Vector2f pos)
 {
 	sprite.setPosition(pos);
+	this->pos = pos;
 }
 
 void Object::draw(RenderWindow& window)
