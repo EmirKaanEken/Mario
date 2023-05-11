@@ -582,5 +582,7 @@ void Game::checkAndHandleTurtleMeet(void)
 			other = other->next;
 		}
 		cur = cur->next;
+		if(cur)
+			other = cur->next;
 	}
 }
