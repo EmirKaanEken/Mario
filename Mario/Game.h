@@ -22,8 +22,6 @@ public:
 	int gameState;		//0: Main page		1: In game		2: Win Page		3: Lose Page
 	void drawBackground(RenderWindow& window);
 	void setBackground();
-	void setMainScreen();
-	void drawMainScreen(RenderWindow& window);
 	Turtle* addTurtle(void);
 	Mario* addMario(void);
 	void removeObject(Object*);

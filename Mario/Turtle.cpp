@@ -76,7 +76,7 @@ void Turtle::move()
 			state = 4;
 		break;
 	case 3:
-		/*since window refresh rate is 100ms, so is drequency of this function is called So this if structure provide 0.5 second for turtles to surprise and stay still.
+		/*since window refresh rate is 100ms, so is frequency of this function is called. So this if structure provide 0.5 second for turtles to surprise and stay still.
 		Then they will continue to walk other directions from state 1. Change of directions and coming to the state 3 are handled by "checkAndHandleTurtleMeet" function in Game class*/
 		if (animationTimeCounter <= 5)
 		{
@@ -90,16 +90,16 @@ void Turtle::move()
 			animationTimeCounter = 0;
 		}
 		break;
-	case 4:				// when a turtle die, its horizontal speed is set to 0 to make it fall directly to down. Also it cannot kill while falling.
+	case 4:				// when a turtle die or half die, its horizontal speed is set to 0. Also it cannot kill at these states.
 			state = 4;
 			this->vx = 0;
 			this->canKill = false;
-			if (this->getIsHalfDead())
+			if (this->getIsHalfDead())		//if it half die, it wait 8 seconds to turn back to normal.
 			{
 				if (animationTimeCounter <= 80)
 				{
-					if (animationTimeCounter <= 20)
-						this->canDie = false;
+					if (animationTimeCounter <= 20)		//when it is set as half dead, we give it 2 seconds before it can be killed by sides, to prevent 
+						this->canDie = false;			//	it is killed by the mario just after it is hit from below.
 					else
 						this->canDie = true;
 					animationTimeCounter++;

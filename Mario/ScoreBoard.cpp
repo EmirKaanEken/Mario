@@ -23,7 +23,7 @@ void ScoreBoard::drawScoreBoard(RenderWindow& window)
 		head.setPosition(Vector2f(250 + (i*50), 50));
 		window.draw(head);
 	}
-	/*it draws as many mamrio heads as the according to the "live" variable with 50 px gaps.*/
+	/*it draws as many mario heads as the according to the "live" variable with 50 px gaps.*/
 
 
 	/*"text" variable contains current score.*/

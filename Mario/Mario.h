@@ -5,10 +5,10 @@
 class Mario : public Object {
 	float vx;
 	float vy;
+	bool isOnFloorPrevCycle;
 public:
 	Mario(RenderWindow* window);
 	enum moveDirection {		//this enum not only has directions but also STAND and DEAD, since they are also different states of moves to be processed
-		UP,
 		RIGHT,
 		LEFT,
 		STAND,

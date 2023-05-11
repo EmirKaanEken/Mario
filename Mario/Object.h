@@ -8,11 +8,12 @@ protected:
 	RenderWindow* window;
 	int state;
 	int footState;
-	int heading;		//0: beggining of the game		1: To left		2: To right
+	int heading;				//1: To left		2: To right
 	bool isdead;		
-	Object* next;		//to be able to make linked list of this object
-	friend class Game;	//Game class able to access this class's members. 
-	bool canKill;		//When an object is dead, it should not be able to kill while performing death animation.
+	Object* next;				//to be able to make linked list of this object
+	friend class Game;			//Game class able to access this class's members. 
+	bool canKill;				//When an object is dead, it should not be able to kill while performing death animation.
+	int animationTimeCounter;	//for slide and surprise animations
 public:
 	Object(RenderWindow* window);
 	void setPosition(Vector2f);

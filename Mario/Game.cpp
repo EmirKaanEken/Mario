@@ -107,7 +107,7 @@ void Game::update(void) {
 
 			spawnTurtle();	//spawn a turtle as creating an object and adding it to the Object linked list at certain times.
 
-			checkAndHandleTurtleMeet();
+			checkAndHandleTurtleMeet();	//Bonus #2. Check if 2 turtles have met and handle surprise and change direction.
 
 			handleCollusion();	//handle the mario-turtle collision. One of them dies and relevant objectives are handled. The collision check is done inside of this function
 
@@ -175,7 +175,7 @@ void Game::update(void) {
 
 		
 		window->display();			//whatever the game state are and which objects are drawn, displays the screen.
-		sleep(milliseconds(100));	//sscreen refresh rate is 100ms.
+		sleep(milliseconds(100));	//screen refresh rate is 100ms.
 		
 	}
 }
@@ -231,7 +231,7 @@ void Game::setBackground()
 		else
 			this->platforms[i].setPosition(WINDOW_WIDTH - (brickPlatformIndexes[6]++ * brickWidth), 200);
 	}
-	/*all coordinates are set manually by trial and error. Since the origin is top left corner of the sprite by default, while changing scale of the ppipes in sake of change
+	/*all coordinates are set manually by trial and error. Since the origin is top left corner of the sprite by default, while changing scale of the pipes in sake of change
 	their direction they are also shifted. Also, a brick platform attached to left border of screen use brickPlatformIndexes as 0, while brick platforms attached to right border
 	of the screen use it as 1 due to the same sprite origin problem.*/
 }
@@ -339,10 +339,6 @@ void Game::handleTurtleMove(Object* obj)
 
 bool Game::onFloor(Object* obj)
 {
-	/*Burada þu an width falan karþýlaþtýrarak, aslýnda platformla çakýþtýðý taraflarý ayýrmaya baþladým. Genel bi checkHit fonksiyonuna bunlarýn çoðunu
-	geçirip, burada sadece ilgili fonksiyonu çaðýrýp onun geri dönüþüne göre true false dönerim mesela, o fonksiyonun diðer çýktýlarý için de baþka 
-	fonksiyonlarda iþ yaparým*/
-
 	/*the intersectedRect variable is used to decide which side object hit the platform.*/
 	FloatRect intersectedRect;
 	for (int j = 0; j < 81; j++)	//the obje checks if it intersects any platform in the game at every cycle
@@ -355,7 +351,7 @@ bool Game::onFloor(Object* obj)
 			{
 				if(platforms[j].getGlobalBounds().top > obj->sprite.getGlobalBounds().top)	//checks if the object is placed above the platform. So we know it hit from above.
 				{
-						obj->setPosition(Vector2f(obj->getPosition().x, platforms[j].getGlobalBounds().top - (obj->sprite.getGlobalBounds().height/ 2.0f) + 1)); //biraz içeri girseler de en tepeye çýksýn diye koydum ama iþlem hýzýný yavaþlattýðý için bazen platform içinden geçilmesine sebep luyo
+						obj->setPosition(Vector2f(obj->getPosition().x, platforms[j].getGlobalBounds().top - (obj->sprite.getGlobalBounds().height/ 2.0f) + 1)); 
 						return true;
 						/*if all the if checks are true, then the object is on the floor. It also set the object position exactly on the floor, but not partially inside the platform.*/
 				}
@@ -379,7 +375,7 @@ bool Game::checkCollusion(Turtle* t, Mario* m, int& side)	//The mario hit the tu
 	{
 		if (resRect.width > resRect.height)		//Mario hit from above or below
 		{
-			if (turtleRect.top > marioRect.top)		//Mario hit from above (since y index of the screen increases to the below.
+			if (turtleRect.top > marioRect.top)		//Mario hit from above (since y index of the screen increases to the below).
 				side = 3;
 			else									//Mario hit from below
 				side = 1;
@@ -407,24 +403,24 @@ void Game::handleCollusion(void)
 		{
 			if (checkCollusion(static_cast<Turtle*>(cur), mario, side))
 			{
-				if ((0 == side || 2 == side))		//if Mario hit from left or right and the turtle is able to kill (is alive), mario should die
-				{
+				/*if Mario hit from left or right and turtle is able to kill (not dead or halfDead), mario should die. If turtle is half dead and mario is able to kill (is alive), then it dies*/
+				if ((0 == side || 2 == side))				//it gives a time interval to turtle to be able to die after it set as half dead
+				{													//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 					if (static_cast<Turtle*>(cur)->getIsHalfDead() && static_cast<Turtle*>(cur)->getCanDie() && mario->canKill)
 						handleTurtleDie(cur);
 					else if (cur->canKill)
 						handleMarioDie();
 				}
-				else if ((3 == side) && mario->canKill)	//if Mario hit from above or below and the mario is able to kill (is alive), turtle should die
+				else if ((3 == side) && mario->canKill)	//if Mario hit from above and the mario is able to kill (is alive), turtle should die
 				{
 					handleTurtleDie(cur);
 					mario->setVerticalSpeed(-12);		// if Mario hit from above, it also bounce of the turtle shell.
 				}
-				else if (1 == side && mario->canKill)
+				else if (1 == side && mario->canKill)	//if Mario hit from below and the mario is able to kill (is alive), turtle should half die
 				{
-					static_cast<Turtle*>(cur)->setVerticalSpeed(-12);
+					static_cast<Turtle*>(cur)->setVerticalSpeed(-12);	// if Mario hit from below, the turtle also bounce.
 					static_cast<Turtle*>(cur)->setIsHalfDead(true);
 					cur->state = 4;
-
 				}
 			}
 		}
@@ -460,8 +456,8 @@ void Game::spawnTurtle(void)
 
 void Game::moveObjects(void)
 {
-	/*travels the Object linked list and calls relevant handle move function of the objects. This can be implemented using polymorphism, however especiall handlemariomove 
-	function is using lots of variables from the game class and sending all of them as parameters is not make sence I think.*/
+	/*travels the Object linked list and calls relevant handle move function of the objects. This can be implemented using polymorphism, however especially handlemariomove 
+	function is using lots of variables from the game class and sending all of them as parameters is not make sence we think.*/
 	Object* cur = objects;
 	while (cur)
 	{
@@ -489,9 +485,9 @@ void Game::handleMarioDie(void)
 
 void Game::handleTurtleDie(Object* obj)
 {
-	/*This function is called when mario hit the turtle from above or below. Because of this, this function will be called lots of time when turtle die and before it go 
-	outside of the mar,o rectangle area. So it should check if th eturtle is already dead before it increases the player point. But when it does increas, it alsco checks
-	if the player has reached 500 point and if they has, the game finishes as win.*/
+	/*This function is called when mario hit the turtle from above(or any side when turtle is half dead). Because of this, this function will be called lots of time when turtle 
+	die and before it go outside of the mario rectangle area. So it should check if the turtle is already dead before it increases the player point. But when it does increas, it 
+	alsco checks if the player has reached 500 point and if they has, the game finishes as win.*/
 	if (!obj->getIsDead())
 	{
 		int score = stoi(scoreBoard->getScore());
@@ -554,8 +550,8 @@ void Game::checkAndHandleTurtleMeet(void)
 	{
 		while (other)
 		{
-			/*if both cur and other points to a turtle object and they are not the same objects...*/
-			if (dynamic_cast<Turtle*>(cur) != NULL && dynamic_cast<Turtle*>(other) != NULL && cur != other && !(static_cast<Turtle*>(cur)->getIsHalfDead()) && !(static_cast<Turtle*>(other)->getIsHalfDead()))
+			/*if both cur and other points to a turtle object and they are not the same objects (also they both are alive)...*/
+			if (dynamic_cast<Turtle*>(cur) != NULL && dynamic_cast<Turtle*>(other) != NULL && cur != other && !(static_cast<Turtle*>(cur)->getIsHalfDead()) && !(static_cast<Turtle*>(other)->getIsHalfDead()) && !cur->getIsDead() && !other->getIsDead())
 			{
 				curRect = cur->sprite.getGlobalBounds();
 				otherRect = other->sprite.getGlobalBounds();
@@ -570,7 +566,7 @@ void Game::checkAndHandleTurtleMeet(void)
 						cur->state = 3;
 						other->state = 3;
 					}
-					else if (curRect.left > otherRect.left && cur->heading == 1 && other->heading == 2)
+					else if (curRect.left > otherRect.left && cur->heading == 1 && other->heading == 2)	//vice versa
 					{
 						cur->heading = 2;
 						other->heading = 1;
