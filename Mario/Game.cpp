@@ -407,15 +407,24 @@ void Game::handleCollusion(void)
 		{
 			if (checkCollusion(static_cast<Turtle*>(cur), mario, side))
 			{
-				if ((0 == side || 2 == side) && cur->canKill)		//if Mario hit from left or right and the turtle is able to kill (is alive), mario should die
+				if ((0 == side || 2 == side))		//if Mario hit from left or right and the turtle is able to kill (is alive), mario should die
 				{
-					handleMarioDie();
+					if (static_cast<Turtle*>(cur)->getIsHalfDead() && static_cast<Turtle*>(cur)->getCanDie() && mario->canKill)
+						handleTurtleDie(cur);
+					else if (cur->canKill)
+						handleMarioDie();
 				}
-				else if((1 == side || 3 == side) && mario->canKill)	//if Mario hit from above or below and the mario is able to kill (is alive), turtle should die
+				else if ((3 == side) && mario->canKill)	//if Mario hit from above or below and the mario is able to kill (is alive), turtle should die
 				{
 					handleTurtleDie(cur);
-					if(3 == side)						// if Mario hit from above, it also bounce of the turtle shell.
-						mario->setVerticalSpeed(-12);
+					mario->setVerticalSpeed(-12);		// if Mario hit from above, it also bounce of the turtle shell.
+				}
+				else if (1 == side && mario->canKill)
+				{
+					static_cast<Turtle*>(cur)->setVerticalSpeed(-12);
+					static_cast<Turtle*>(cur)->setIsHalfDead(true);
+					cur->state = 4;
+
 				}
 			}
 		}
@@ -546,7 +555,7 @@ void Game::checkAndHandleTurtleMeet(void)
 		while (other)
 		{
 			/*if both cur and other points to a turtle object and they are not the same objects...*/
-			if (dynamic_cast<Turtle*>(cur) != NULL && dynamic_cast<Turtle*>(other) != NULL && cur != other)
+			if (dynamic_cast<Turtle*>(cur) != NULL && dynamic_cast<Turtle*>(other) != NULL && cur != other && !(static_cast<Turtle*>(cur)->getIsHalfDead()) && !(static_cast<Turtle*>(other)->getIsHalfDead()))
 			{
 				curRect = cur->sprite.getGlobalBounds();
 				otherRect = other->sprite.getGlobalBounds();

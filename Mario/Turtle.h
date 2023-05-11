@@ -5,10 +5,17 @@
 class Turtle : public Object {
 	float vx;
 	float vy;
+	bool isHalfDead;
+	bool canDie;
 public:
 	Turtle(RenderWindow* window);
 	void move();
 	void jump(bool down);
 	void fall(void);
-	int surpriseCounter;
+	int animationTimeCounter;
+	void setVerticalSpeed(float s) { this->vy = s; }
+	void setIsHalfDead(bool halfDead) { this->isHalfDead = halfDead; }
+	bool getIsHalfDead(void) { return this->isHalfDead; }
+	//void setCanDie(bool cd) { this->canDie = cd; }
+	bool getCanDie(void) { return this->canDie; }
 };

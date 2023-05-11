@@ -16,7 +16,7 @@ Turtle::Turtle(RenderWindow* window) : Object(window) {
 
 	this->vx = 0;
 	this->vy = 0;
-	this->surpriseCounter = 0;
+	this->animationTimeCounter = 0;
 }
 
 void Turtle::move()
@@ -78,22 +78,40 @@ void Turtle::move()
 	case 3:
 		/*since window refresh rate is 100ms, so is drequency of this function is called So this if structure provide 0.5 second for turtles to surprise and stay still.
 		Then they will continue to walk other directions from state 1. Change of directions and coming to the state 3 are handled by "checkAndHandleTurtleMeet" function in Game class*/
-		if (surpriseCounter <= 5)
+		if (animationTimeCounter <= 5)
 		{
 			state = 3;
 			vx = 0;
-			surpriseCounter++;
+			animationTimeCounter++;
 		}
 		else
 		{
 			state = 1;
-			surpriseCounter = 0;
+			animationTimeCounter = 0;
 		}
 		break;
 	case 4:				// when a turtle die, its horizontal speed is set to 0 to make it fall directly to down. Also it cannot kill while falling.
 			state = 4;
 			this->vx = 0;
 			this->canKill = false;
+			if (this->getIsHalfDead())
+			{
+				if (animationTimeCounter <= 80)
+				{
+					if (animationTimeCounter <= 20)
+						this->canDie = false;
+					else
+						this->canDie = true;
+					animationTimeCounter++;
+				}
+				else
+				{
+					animationTimeCounter = 0;
+					state = 1;
+					this->setIsHalfDead(false);
+					this->canKill = true;
+				}
+			}
 		break;
 	default:
 		break;
